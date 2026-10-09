@@ -26,13 +26,22 @@ const Footer = () => {
               সকল দাম সম্ভাব্য; বাজার অবস্থার ওপর নির্ভর করে পরিবর্তিত হয়।
             </p>
             <div className="flex gap-4 justify-center md:justify-end mt-3 text-sm text-base-content/60">
-              <Link href="/about" className="hover:text-primary transition-colors">
+              <Link
+                href="/about"
+                className="hover:text-primary transition-colors"
+              >
                 আমাদের সম্পর্কে
               </Link>
-              <Link href="/contact" className="hover:text-primary transition-colors">
+              <Link
+                href="/contact"
+                className="hover:text-primary transition-colors"
+              >
                 যোগাযোগ
               </Link>
-              <Link href="/privacy" className="hover:text-primary transition-colors">
+              <Link
+                href="/privacy"
+                className="hover:text-primary transition-colors"
+              >
                 গোপনীয়তা নীতি
               </Link>
             </div>
@@ -40,7 +49,7 @@ const Footer = () => {
         </div>
 
         <div className="mt-6 pt-4 border-t border-base-300 text-center text-xs text-base-content/50">
-          © {new Date().getFullYear()} বাজার দর। সর্বস্বত্ব সংরক্ষিত।
+          © ২০২৬ বাজার দর। সর্বস্বত্ব সংরক্ষিত।
         </div>
       </div>
     </footer>

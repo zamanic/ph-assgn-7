@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 
 export default function NotFound() {
@@ -16,10 +18,7 @@ export default function NotFound() {
           অনুগ্রহপূর্বক হোম পেজে ফিরে যান।
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link
-            href="/"
-            className="btn btn-primary btn-lg gap-2"
-          >
+          <Link href="/" className="btn btn-primary btn-lg gap-2">
             <span>🏠</span>
             হোম পেজে ফিরে যান
           </Link>

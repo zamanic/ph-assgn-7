@@ -6,14 +6,18 @@ import { useSession, signOut } from "@/lib/auth-client";
 import { useApp } from "@/context/AppContext";
 import { getBanglaDate } from "@/lib/utils";
 import toast from "react-hot-toast";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const Navbar = () => {
   const { data: session } = useSession();
   const { categories } = useApp();
-  const banglaDate = getBanglaDate();
+  const [banglaDate, setBanglaDate] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
+
+  useEffect(() => {
+    setBanglaDate(getBanglaDate());
+  }, []);
 
   const handleSignOut = async () => {
     try {
