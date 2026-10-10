@@ -1,6 +1,10 @@
 export interface MarketPrice {
   bazar: string;
   price: number;
+  // Extra: per-market min/max (shown in বাজারভিত্তিক দাম section)
+  min?: number;
+  max?: number;
+  division?: string;
 }
 
 export interface Product {
@@ -18,6 +22,8 @@ export interface Product {
   todayPrice: number;
   changePercent: number;
   prices: MarketPrice[];
+  // Extra: raw markets array (optional, preserves API structure)
+  _rawMarkets?: unknown[];
 }
 
 export interface Category {

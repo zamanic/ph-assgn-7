@@ -5,7 +5,7 @@ import { useSession } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import toast from "react-hot-toast";
-import { API_BASE, formatPrice } from "@/lib/utils";
+import { fetchProducts, formatPrice } from "@/lib/utils";
 import type { Product } from "@/types";
 import LoadingSkeleton from "./loading";
 
@@ -32,10 +32,11 @@ export default function ProductDetailPage({
     const fetchProductData = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`${API_BASE}/products`, { cache: "no-store" });
-        if (!res.ok) throw new Error("ডেটা লোড করতে সমস্যা হয়েছে");
-        const products: Product[] = await res.json();
-        const found = products.find((p) => p.slug === params.slug);
+        // Use NORMALIZED helper so todayPrice/minPrice/maxPrice/prices exist
+        const products = await fetchProducts();
+        const found =
+          products.find((p) => p.slug === params.slug) ||
+          products.find((p) => String(p.id) === params.slug);
         if (!found) {
           setError("পণ্যটি পাওয়া যায়নি");
         } else {
@@ -63,10 +64,7 @@ export default function ProductDetailPage({
         <h1 className="text-3xl font-bold text-error mb-4">
           {error || "পণ্যটি পাওয়া যায়নি"}
         </h1>
-        <Link
-          href="/"
-          className="btn btn-primary btn-lg mt-6"
-        >
+        <Link href="/" className="btn btn-primary btn-lg mt-6">
           হোম পেজে ফিরে যান
         </Link>
       </div>
@@ -143,29 +141,48 @@ export default function ProductDetailPage({
 
           {product.prices && product.prices.length > 0 ? (
             <div className="divide-y divide-base-200">
-              {product.prices.map((item, idx) => (
-                <div
-                  key={idx}
-                  className="flex items-center justify-between py-4 px-2 hover:bg-base-50 rounded-lg transition-colors"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-lg">
-                      🛒
+              {product.prices.map((item, idx) => {
+                const hasRange =
+                  typeof item.min === "number" &&
+                  typeof item.max === "number" &&
+                  item.min !== item.max;
+                return (
+                  <div
+                    key={idx}
+                    className="flex items-center justify-between py-4 px-2 hover:bg-base-50 rounded-lg transition-colors"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-lg">
+                        🛒
+                      </div>
+                      <div>
+                        <p className="font-semibold">{item.bazar}</p>
+                        <p className="text-xs text-base-content/50">
+                          {item.division ? `${item.division} · ` : ""}
+                          প্রতি {product.unit}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-semibold">{item.bazar}</p>
-                      <p className="text-xs text-base-content/50">
-                        প্রতি {product.unit}
-                      </p>
+                    <div className="text-right">
+                      {hasRange ? (
+                        <>
+                          <p className="text-lg font-bold text-primary">
+                            ৳ {formatPrice(item.min!)} —{" "}
+                            {formatPrice(item.max!)}
+                          </p>
+                          <p className="text-xs text-base-content/50">
+                            গড়: ৳ {formatPrice(item.price)}
+                          </p>
+                        </>
+                      ) : (
+                        <p className="text-lg font-bold text-primary">
+                          ৳ {formatPrice(item.price)}
+                        </p>
+                      )}
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-lg font-bold text-primary">
-                      ৳ {formatPrice(item.price)}
-                    </p>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           ) : (
             <div className="text-center py-12 text-base-content/50">
