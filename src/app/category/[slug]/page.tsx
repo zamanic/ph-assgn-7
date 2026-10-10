@@ -21,26 +21,24 @@ export default function CategoryPage({
     setSortOption("default");
   }, [slug]);
 
-  const category = categories.find(
-    (c) => c.slug === slug || c.name === slug
-  );
+  const category = categories.find((c) => c.slug === slug || c.name === slug);
 
   const filteredProducts = useMemo(() => {
     let result = products.filter(
-      (p) => p.category === slug || p.categoryName === slug
+      (p) => p.category === slug || p.categoryName === slug,
     );
 
     if (!category && result.length === 0) {
       const catMatch = categories.find(
         (c) =>
           c.name ===
-          products.find(
-            (p) => p.category === slug || p.categoryName === slug
-          )?.categoryName
+          products.find((p) => p.category === slug || p.categoryName === slug)
+            ?.categoryName,
       );
       if (catMatch) {
         result = products.filter(
-          (p) => p.category === catMatch.slug || p.categoryName === catMatch.name
+          (p) =>
+            p.category === catMatch.slug || p.categoryName === catMatch.name,
         );
       }
     }
@@ -60,10 +58,10 @@ export default function CategoryPage({
   }, [products, categories, slug, sortOption, category]);
 
   const sortOptions: { value: SortOption; label: string }[] = [
-  { value: "default", label: "ডিফল্ট" },
-  { value: "price-asc", label: "দাম: কম থেকে বেশি" },
-  { value: "price-desc", label: "দাম: বেশি থেকে কম" },
-];
+    { value: "default", label: "ডিফল্ট" },
+    { value: "price-asc", label: "দাম: কম থেকে বেশি" },
+    { value: "price-desc", label: "দাম: বেশি থেকে কম" },
+  ];
 
   if (loading) {
     return <LoadingSkeleton />;
@@ -83,27 +81,44 @@ export default function CategoryPage({
   const hasItems = filteredProducts.length > 0;
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-7xl">
+    <div className="container mx-auto px-4 py-10">
       <div className="mb-6">
-        <Link
-          href="/"
-          className="btn btn-ghost btn-sm gap-2 text-base-content/70 hover:text-base-content"
-        >
-          <span>←</span>
+        <Link href="/" className="btn-ghost-penpot !min-h-[36px] !px-3">
+          <span aria-hidden>←</span>
           হোমে ফিরুন
         </Link>
       </div>
 
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
         <div className="flex items-center gap-4">
-          <div className="h-14 w-14 flex items-center justify-center text-3xl bg-primary/10 rounded-xl">
+          <div
+            className="shrink-0 flex items-center justify-center bg-[#F0F5F0]"
+            style={{
+              width: 48,
+              height: 48,
+              borderRadius: 12,
+              fontSize: 24,
+            }}
+          >
             {displayCategory?.icon || "📦"}
           </div>
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold">
+            <h1
+              className="m-0 text-[#1D271F]"
+              style={{ fontSize: 24, fontWeight: 700, lineHeight: 1.3333 }}
+            >
               {displayCategory?.name || "ক্যাটাগরি"}
             </h1>
-            <p className="text-sm text-base-content/60 mt-1">
+            <p
+              className="m-0 mt-1"
+              style={{
+                fontSize: 14,
+                fontWeight: 400,
+                lineHeight: 1.5,
+                color: "#1D271F",
+                opacity: 0.7,
+              }}
+            >
               মোট {filteredProducts.length} টি পণ্য
             </p>
           </div>
@@ -111,13 +126,19 @@ export default function CategoryPage({
 
         {hasItems && (
           <div className="flex items-center gap-3">
-            <label className="text-sm font-medium text-base-content/70">
+            <label
+              htmlFor="cat-sort"
+              className="text-[#1D271F]"
+              style={{ fontSize: 14, fontWeight: 500, opacity: 0.75 }}
+            >
               সাজান:
             </label>
             <select
+              id="cat-sort"
               value={sortOption}
               onChange={(e) => setSortOption(e.target.value as SortOption)}
-              className="select select-bordered select-sm bg-base-100 w-full md:w-56"
+              className="select select-bordered select-sm bg-[#FAFCFA] w-full md:w-56"
+              style={{ borderRadius: 8, minHeight: 40 }}
             >
               {sortOptions.map((opt) => (
                 <option key={opt.value} value={opt.value}>
@@ -130,7 +151,14 @@ export default function CategoryPage({
       </div>
 
       {hasItems ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+        <div
+          className="grid w-full"
+          style={{
+            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+            columnGap: 16,
+            rowGap: 16,
+          }}
+        >
           {filteredProducts.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}

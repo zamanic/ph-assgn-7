@@ -7,91 +7,366 @@
 @custom-variant dark (&:where([data-theme="dark"]));
 
 /*
-  WCAG 2.1 AA contrast-safe tokens.
-  Minimum contrast ratios for AA:
-    Normal text:  4.5 : 1  against white/light backgrounds
-    Large text :  3.0 : 1
-  Primary green on white  #047857 / #fff  ≈ 5.6:1 ✅
-  Danger red   on white  #b91c1c / #fff  ≈ 6.6:1 ✅
-  Success green on white #15803d / #fff  ≈ 6.2:1 ✅
-  Neutral text on bg-50  #1f2937 / #f9fafb ≈ 15.5:1 ✅
+  EXACT DESIGN TOKENS — extracted from Penpot file "Bazardor -Assignment-07.penpot"
+  Source report: nextapp/DESIGN_TOKENS_REPORT.md
+  All HEX/RGB values come directly from tokens.json and shape-level fills/strokes,
+  no designer opinions introduced.
 */
 :root {
-  /* Surfaces */
-  --background: #f9fafb; /* bg-gray-50 */
-  --surface: #ffffff; /* card surface */
-  --foreground: #0f172a; /* slate-900 (max contrast) */
-  --foreground-muted: #334155; /* slate-700 */
+  /* ============================================================
+     1. SURFACES — Penpot "Bazardor/Color/Light"
+     ============================================================ */
+  --background: #F0F5F0;   /* base-200: Page canvas background #F0F5F0 */
+  --surface: #FAFCFA;      /* base-100: Card / Header / Footer surface #FAFCFA */
+  --foreground: #1D271F;   /* base-content: Primary text #1D271F */
+  --foreground-muted: #1D271FB3; /* base-content at 70% opacity (~#8A928C) */
 
-  /* Brand — high-contrast dark emerald instead of pale */
-  --brand-primary: #047857; /* emerald-700 — AA on white: 5.6:1 */
-  --brand-primary-hover: #065f46;
-  --brand-on-primary: #ffffff; /* white text on brand-green = 5.6:1 ✅ */
+  /* ============================================================
+     2. BRAND — exact Penpot tokens (not Tailwind defaults!)
+     ============================================================ */
+  --brand-primary: #05893E;        /* primary rgb(5,137,62) */
+  --brand-primary-hover: #047F39;  /* primary.strong rgb(4,127,57) */
+  --brand-primary-pressed: #037333;/* hover.primary-border rgb(3,115,51) */
+  --brand-on-primary: #F3FBF4;     /* primary-content rgb(243,251,244) */
+  --link-pressed: #02642B;         /* hover.link-primary rgb(2,100,43) */
 
-  /* Status */
-  --danger: #b91c1c;
-  --on-danger: #ffffff;
-  --success: #15803d;
-  --on-success: #ffffff;
-  --warning: #b45309;
-  --neutral-muted: #475569;
+  /* ============================================================
+     3. STATUS — success/error (used for ▲▼ price badges)
+     ============================================================ */
+  --success: #1A9951;        /* success rgb(26,153,81) - ▼ price decreased (green) */
+  --on-success: #F3FBF4;     /* primary-content (text on success) */
+  --success-10: #05893E1A;   /* primary 10% opacity (pill surface, badge surface) */
+  --error: #D03739;          /* error rgb(208,55,57) - ▲ price increased (red) */
+  --on-error: #FFF6F5;       /* error-content rgb(255,246,245) */
+  --error-bg: #BD3133;       /* hover.error-bg rgb(189,49,51) — red badge surface */
+  --error-border: #B02D2F;   /* hover.error-border rgb(176,45,47) */
+  --warning: #B45309;        /* Keeping Tailwind default (unused in visible spec) */
+
+  /* ============================================================
+     4. NEUTRAL / DIVIDERS
+     ============================================================ */
+  --neutral-bg: #DADEDA;     /* hover.neutral-bg rgb(218,222,218) — btn hover */
+  --neutral-border: #CCD0CC; /* hover.neutral-border rgb(204,208,204) */
+  --divider: #E1E8E1;        /* base-300: strokes / dividers / borders */
+  --chip-bg: #F0F5F0;        /* base-200: default category chip / badge surface */
+  --white: #FFFFFF;          /* pure white */
+
+  /* ============================================================
+     5. LAYOUT CONSTANTS — extracted from shape x/y/width/height
+     ============================================================ */
+  --container-max: 1152px;        /* centered stack max-width (page 1440 − 2×144 gutters) */
+  --section-gap: 40px;            /* Hero ↔ PriceMovers1 ↔ PriceMovers2 ↔ AllProducts vertical rowGap */
+  --grid-gap: 16px;               /* product grids col + row gap = 16 px */
+  --radius-hero: 24px;            /* Hero outer frame radius 24 */
+  --radius-card: 16px;            /* Product Card outer radius */
+  --radius-eyebrow: 14px;         /* Hero date pill */
+  --radius-badge: 12px;           /* Price change badge (full pill h=24) */
+  --radius-icon: 12px;            /* Product icon square (48×48) */
+  --radius-button: 8px;           /* Primary / Ghost button, Category chip */
+  --radius-input: 8px;            /* Auth forms */
+
+  /* Navbar / Ticker / Footer exact heights */
+  --nav-total-h: 118px;           /* Header total (row1 68 + row2 49 + separator 1) */
+  --nav-row1-h: 68px;             /* Top row: logo + sign-in/out */
+  --nav-row2-h: 49px;             /* Categories row */
+  --chip-h: 32px;                 /* Category nav chip height */
+  --ticker-h: 37px;               /* Marquee height */
+  --footer-h: 69px;               /* Footer row height */
+
+  /* Hero inner values */
+  --hero-h: 283px;                /* Outer hero height on desktop */
+  --hero-inner-pad-y: 40px;       /* Top/bottom padding inside hero */
+  --hero-inner-pad-x: 16px;       /* Left/right padding */
+  --hero-img-w: 315px;
+  --hero-img-h: 263px;
+
+  /* Card inner values */
+  --card-h: 138px;                /* Product card height */
+  --card-pad: 16px;               /* 4-sided card inner padding */
+  --card-icon-size: 48px;         /* Icon square on card row-1 */
+  --card-badge-h: 24px;           /* Price-change badge pill height */
+
+  /* Typography shorthands — Penpot typography scale */
+  --fs-h1: 36px;     --lh-h1: 45px;     --fw-h1: 700; /* Hero H1 */
+  --fs-h2: 20px;     --lh-h2: 28px;     --fw-h2: 700; /* Section titles */
+  --fs-eyebrow: 14px;--lh-eyebrow: 20px;--fw-eyebrow: 500; /* Hero date pill */
+  --fs-body: 16px;   --lh-body: 24px;   --fw-body: 400; /* Paragraph / subtitle */
+  --fs-nav: 14px;    --lh-nav: 21px;    --fw-nav: 600; /* Button / nav link */
+  --fs-price: 16px;  --lh-price: 24px;  --fw-price: 600; /* Card price */
+  --fs-caption: 12px;--lh-caption: 16px;--fw-caption: 600; /* Badge percent / micro */
+  --fs-footer: 14px; --lh-footer: 20px; --fw-footer: 400;
 }
 
+/* ============================================================
+   Tailwind v4 + DaisyUI + HeroUI shared theme variables
+   (Single source of truth via :root CSS vars above)
+   ============================================================ */
 @theme inline {
+  /* Surfaces */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-foreground-muted: var(--foreground-muted);
 
-  /* DaisyUI primary (btn-primary, badge-primary etc.) + HeroUI primary inherit */
+  /* DaisyUI semantic (also consumed by HeroUI because HeroUI @import inherits) */
   --color-primary: var(--brand-primary);
   --color-primary-content: var(--brand-on-primary);
-  --color-primary-dark: var(--brand-primary-hover);
-  --color-secondary: #c2410c; /* orange-700 — contrast 6.0:1 on white */
-  --color-secondary-content: #ffffff;
-  --color-danger: var(--danger);
-  --color-danger-content: var(--on-danger);
-  --color-error: var(--danger);
-  --color-error-content: var(--on-danger);
+  --color-primary-dark: var(--brand-primary-hover);   /* hover */
+  --color-primary-darker: var(--brand-primary-pressed); /* pressed */
+  --color-secondary: var(--link-pressed);
+  --color-secondary-content: var(--brand-on-primary);
+  --color-danger: var(--error);
+  --color-danger-content: var(--on-error);
+  --color-error: var(--error);
+  --color-error-content: var(--on-error);
   --color-success: var(--success);
   --color-success-content: var(--on-success);
   --color-warning: var(--warning);
-  --color-warning-content: #ffffff;
-  --color-neutral: var(--neutral-muted);
-  --color-neutral-content: #ffffff;
+  --color-warning-content: #FFFFFF;
+  --color-neutral: var(--foreground-muted);
+  --color-neutral-content: #FFFFFF;
 
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Surfaces — DaisyUI names */
+  --color-base-100: var(--surface);
+  --color-base-200: var(--chip-bg);
+  --color-base-300: var(--divider);
+  --color-base-content: var(--foreground);
+
+  /* Layout tokens */
+  --container-max-w: var(--container-max);
+
+  /* Fonts — Hind Siliguri (next/font/google assigned in layout.tsx) */
+  --font-sans: var(--font-hind-siliguri);
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
-/* Light-only application (exam-friendly). Keep 4.5:1 everywhere by avoiding light grey on light gray text. */
-html,
-body {
-  color-scheme: light;
+/* ============================================================
+   DaisyUI theme override (Light mode only, as per spec)
+   ============================================================ */
+@layer base {
+  :where(:root) {
+    color-scheme: light;
+  }
+  html, body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  /* Container — enforce 1152 px max (Penpot 1440 canvas − 2×144 gutters) */
+  .container {
+    max-width: var(--container-max) !important;
+    padding-left: 16px;
+    padding-right: 16px;
+    margin-left: auto;
+    margin-right: auto;
+  }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+/* ============================================================
+   Component-level helper classes (match Penpot exact specs)
+   ============================================================ */
+@layer components {
+  /* Primary CTA button — EXACT Penpot button/Primary
+     Height: 40 px, radius: 8 px, pad: 1 / 17 / 1 / 17
+     Stroke (inner border) 1× strong-primary #047F39
+     3-layer box-shadow */
+  .btn-primary-penpot {
+    @apply inline-flex items-center justify-center gap-[6px] whitespace-nowrap select-none;
+    min-height: 40px;
+    padding: 1px 17px;
+    border-radius: 8px;
+    background: var(--brand-primary);
+    color: var(--brand-on-primary);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 21px; /* 14/600 · 21 */
+    border: 1px solid var(--brand-primary-hover); /* strong-primary */
+    /* Exact 3 stacked shadows from Penpot (§4.3 DESIGN_TOKENS_REPORT.md) */
+    box-shadow:
+      0 4px 3px -2px rgba(5, 137, 62, 0.30),
+      0 3px 2px -2px rgba(5, 137, 62, 0.30),
+      inset 0 0.5px 0 0.5px rgba(255, 255, 255, 0.06);
+    transition: transform 150ms ease, background 150ms ease, border-color 150ms ease;
+  }
+  .btn-primary-penpot:hover {
+    background: var(--brand-primary-hover);
+    border-color: var(--brand-primary-pressed);
+  }
+  .btn-primary-penpot:active {
+    background: var(--brand-primary-pressed);
+    border-color: var(--link-pressed);
+  }
+
+  /* Ghost / Secondary button (Sign In nav button) — transparent, 40h, 8r, 1/17 pad */
+  .btn-ghost-penpot {
+    @apply inline-flex items-center justify-center gap-2 whitespace-nowrap select-none;
+    min-height: 40px;
+    padding: 1px 17px;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--foreground);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 21px;
+    border: 1px solid transparent;
+    transition: background 150ms ease, color 150ms ease, border-color 150ms ease;
+  }
+  .btn-ghost-penpot:hover {
+    background: var(--neutral-bg);
+    border-color: var(--neutral-border);
+  }
+
+  /* Hero Eyebrow / Date pill — 28h, 14r, 4/12/4/12 pad, primary 10% bg, text-primary */
+  .pill-eyebrow-penpot {
+    @apply inline-flex items-center;
+    min-height: 28px;
+    padding: 4px 12px;
+    border-radius: 14px;
+    background: rgba(5, 137, 62, 0.10); /* primary at 10% */
+    color: var(--brand-primary);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px; /* 14/500 · 20 */
+  }
+
+  /* Nav category chip (row 2) — h 32, r 8, pad 1/13/1/13, gap 6 icon+text, 14/500
+     Active state = brand-primary bg + brand-on-primary text (contrast safe) */
+  .nav-chip {
+    @apply inline-flex items-center gap-[6px] select-none;
+    min-height: 32px;
+    padding: 1px 13px;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--foreground);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 21px;
+    transition: background 150ms ease, color 150ms ease;
+  }
+  .nav-chip:hover {
+    background: var(--chip-bg);
+  }
+  .nav-chip.is-active {
+    background: var(--brand-primary);
+    color: var(--brand-on-primary);
+    box-shadow:
+      0 4px 3px -2px rgba(5, 137, 62, 0.15),
+      0 3px 2px -2px rgba(5, 137, 62, 0.15);
+  }
+
+  /* Product Card — outer wrapper (exact h 138, r 16, 1px base-300 stroke, bg base-100) */
+  .card-penpot {
+    @apply relative block w-full transition-colors duration-150;
+    min-height: var(--card-h);
+    padding: 1px; /* 1px seam for the inner border stroke illusion */
+    border-radius: var(--radius-card);
+    background: var(--divider); /* stroke peek */
+  }
+  .card-penpot > .card-inner {
+    @apply h-full w-full flex flex-col;
+    padding: var(--card-pad);                /* 16 px on all sides */
+    border-radius: calc(var(--radius-card) - 1px);
+    background: var(--surface);
+    row-gap: 12px;                           /* between row 1 and row 2 */
+  }
+  .card-penpot:hover {
+    background: var(--brand-primary);
+  }
+  .card-penpot:hover > .card-inner {
+    box-shadow: 0 6px 16px -8px rgba(5, 137, 62, 0.25);
+  }
+
+  /* Product card icon (row 1 left) — 48×48, r 12, bg base-200 */
+  .card-icon-square {
+    @apply flex items-center justify-center shrink-0 text-2xl;
+    width: var(--card-icon-size);
+    height: var(--card-icon-size);
+    border-radius: var(--radius-icon);
+    background: var(--chip-bg);
+  }
+
+  /* Price-change Badge pill — h 24, r 12, pad 4/8/4/8, gap 4 */
+  .badge-penpot {
+    @apply inline-flex items-center gap-1 shrink-0;
+    min-height: var(--card-badge-h);
+    padding: 4px 8px;
+    border-radius: var(--radius-badge);
+    background: var(--chip-bg);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 16.5px; /* 11/600 · 16.5 */
+    white-space: nowrap;
+  }
+  .badge-penpot.is-up {   /* ▲ red up (error color) */
+    color: var(--error);
+    background: #FFF6F5;   /* error-content surface */
+    border: 1px solid #D037391F;
+  }
+  .badge-penpot.is-down { /* ▼ green down (success color) */
+    color: var(--success);
+    background: rgba(26, 153, 81, 0.10);
+    border: 1px solid rgba(26, 153, 81, 0.18);
+  }
+  .badge-penpot.is-flat { /* no change */
+    color: var(--foreground-muted);
+  }
+
+  /* Hero Banner frame — r 24, 1px divider stroke, bg surface */
+  .hero-frame {
+    position: relative;
+    overflow: hidden;
+    border-radius: 24px;
+    background: var(--surface);
+    border: 1px solid var(--divider);
+    /* padding 1 (from spec 1px seam) */
+    padding: 1px;
+  }
+  .hero-frame > .hero-inner {
+    width: 100%;
+    border-radius: 23px;
+    padding: 40px 16px;
+    background: var(--surface);
+  }
 }
 
-/* ===== Marquee ===== */
+/* ============================================================
+   Marquee ticker animation (no changes — animation-only)
+   ============================================================ */
 @keyframes marquee {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
 .animate-marquee {
   animation: marquee 30s linear infinite;
+  will-change: transform;
 }
 .animate-marquee:hover {
   animation-play-state: paused;
 }
 
-/* ===== Scroll ===== */
-html {
-  scroll-behavior: smooth;
+/* Ticker height exact — 37px, base-100 bg, top & bottom 1px base-300 stroke */
+.ticker-outer {
+  height: 37px;
+  background: var(--surface);
+  border-top: 1px solid var(--divider);
+  border-bottom: 1px solid var(--divider);
+  overflow: hidden;
+  line-height: 36px;
 }
+.ticker-item {
+  @apply inline-flex items-center gap-[6px];
+  height: 36px;
+  padding: 8px 17px 8px 16px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--foreground);
+  border-right: 1px solid var(--chip-bg);
+  white-space: nowrap;
+}
+.ticker-item:last-of-type { border-right: none; }
+
+/* ============================================================
+   Smooth scroll (for Hero CTA → #সব-পণ্য)
+   ============================================================ */
+html { scroll-behavior: smooth; }

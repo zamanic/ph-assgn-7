@@ -1,51 +1,111 @@
 "use client";
 
 import Image from "next/image";
+import { useEffect, useState } from "react";
 import { Button } from "@heroui/react";
+import { getBanglaDate } from "@/lib/utils";
 
+/**
+ * Hero Banner — exact Penpot spec §5.3
+ * Outer frame: 1120 × 283 (desktop), r=24, bg #FAFCFA, 1px #E1E8E1 stroke.
+ * Inner pad: 40/16.
+ * Left stack (row-gap 8):
+ *   1) Eyebrow date pill — 28h, r=14, pad 4/12, bg-primary/10, text-primary
+ *   2) H1 — 36/700 LH45
+ *   3) Spacer 4px
+ *   4) Subtitle — 16/400 LH24, opacity 70%
+ *   5) Spacer 12px
+ *   6) HeroUI Primary Button (variant=primary size=lg) wrapped in anchor (#সব-পণ্য)
+ * Right: Image 315 × 263 (exact bazar-hero.png dimensions)
+ */
 const Hero = () => {
+  const [banglaDate, setBanglaDate] = useState("");
+  useEffect(() => setBanglaDate(getBanglaDate()), []);
+
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-base-100 to-secondary/5">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent" />
-      <div className="container mx-auto px-4 py-12 md:py-20 lg:py-24 relative">
-        <div className="flex flex-col lg:flex-row items-center gap-10 lg:gap-16">
-          <div className="flex-1 text-center lg:text-left">
-            <p className="inline-block text-sm md:text-base font-semibold text-primary bg-primary/10 px-4 py-1.5 rounded-full mb-4 md:mb-6">
-              স্বাগতম বাজার দরে
-            </p>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-4 md:mb-6 text-base-content">
-              প্রতিদিনের পণ্যের দাম
-              <br />
-              <span className="text-primary">এক নজরে</span>
-            </h1>
-            <p className="text-base md:text-lg text-base-content/70 max-w-xl mx-auto lg:mx-0 mb-6 md:mb-8 leading-relaxed">
-              আপনার প্রিয় পণ্যের আজকের বাজার দাম দেখুন, তুলনা করুন এবং সঠিক
-              সিদ্ধান্ত নিন।
-            </p>
-            <a href="#সব-পণ্য" className="inline-block">
-              <Button
-                variant="primary"
-                size="lg"
-                className="rounded-xl font-semibold px-6 md:px-8 py-6 text-base md:text-lg shadow-lg shadow-emerald-900/20 hover:translate-y-[-1px] transition"
+    <section className="mx-auto w-full max-w-[1152px] px-4">
+      <div className="hero-frame">
+        <div className="hero-inner">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+            {/* ─── LEFT: Copy stack ─── */}
+            <div
+              className="flex flex-col w-full lg:w-auto"
+              style={{ maxWidth: 576, rowGap: 8 }}
+            >
+              {/* 1. Eyebrow date pill */}
+              <span className="pill-eyebrow-penpot w-fit">
+                {banglaDate || "বাজার দর"}
+              </span>
+
+              {/* 2. H1 */}
+              <h1
+                className="text-[#1D271F] m-0"
+                style={{
+                  fontSize: "clamp(28px, 5vw, 36px)",
+                  fontWeight: 700,
+                  lineHeight: 1.25,
+                  letterSpacing: 0,
+                }}
               >
-                সব পণ্য দেখুন
-                <span aria-hidden>→</span>
-              </Button>
-            </a>
-          </div>
-          <div className="flex-1 w-full max-w-lg lg:max-w-none">
-            <div className="relative">
-              <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-3xl blur-2xl opacity-50" />
-              <div className="relative bg-base-100 rounded-2xl md:rounded-3xl p-2 md:p-4 shadow-2xl border border-base-200">
-                <Image
-                  src="/bazar-hero.png"
-                  alt="বাজার দর হিরো ব্যানার"
-                  width={600}
-                  height={500}
-                  className="w-full h-auto rounded-xl md:rounded-2xl object-cover"
-                  priority
-                />
+                আজকের বাজারের দাম এক নজরে
+              </h1>
+
+              {/* 3. Spacer 4px */}
+              <div style={{ height: 4 }} aria-hidden />
+
+              {/* 4. Subtitle */}
+              <p
+                className="m-0"
+                style={{
+                  fontSize: 16,
+                  fontWeight: 400,
+                  lineHeight: 1.5,
+                  color: "#1D271F",
+                  opacity: 0.7,
+                }}
+              >
+                প্রতিদিনের প্রয়োজনীয় পণ্যের আজকের বাজার দাম এক নজরে দেখুন,
+                দাম বাড়ানো ও কমানোর হার বুঝুন, তুলনা করুন এবং সঠিক
+                সিদ্ধান্ত নিন।
+              </p>
+
+              {/* 5. Spacer 12px */}
+              <div style={{ height: 12 }} aria-hidden />
+
+              {/* 6. Primary CTA (HeroUI Button — variant/size props + penpot exact class on wrapper anchor) */}
+              <div className="flex items-center">
+                <a
+                  href="#সব-পণ্য"
+                  className="btn-primary-penpot text-decoration-none"
+                  aria-label="সব পণ্য দেখুন"
+                >
+                  <Button
+                    variant="primary"
+                    size="lg"
+                    className="!bg-transparent !p-0 !min-h-0 !shadow-none !border-0"
+                  >
+                    সব পণ্য দেখুন
+                    <span aria-hidden className="ml-[6px]">
+                      →
+                    </span>
+                  </Button>
+                </a>
               </div>
+            </div>
+
+            {/* ─── RIGHT: Hero image 315 × 263 (exact from Penpot §6.2) ─── */}
+            <div
+              className="mx-auto lg:mx-0 shrink-0 relative"
+              style={{ width: 315, height: 263 }}
+            >
+              <Image
+                src="/bazar-hero.png"
+                alt="বাজার দর হিরো ব্যানার"
+                width={315}
+                height={263}
+                style={{ width: 315, height: 263 }}
+                priority
+              />
             </div>
           </div>
         </div>

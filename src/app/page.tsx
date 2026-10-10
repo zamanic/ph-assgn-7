@@ -3,32 +3,48 @@
 import { Suspense } from "react";
 import Hero from "@/components/home/Hero";
 import ProductSection from "@/components/home/ProductSection";
-import { SkeletonGrid } from "@/components/shared/SkeletonCard";
 import { useApp } from "@/context/AppContext";
 import type { Product } from "@/types";
 
+/**
+ * Home page layout — exact Penpot spec §3.2 / §4.1
+ * Main inner stack (1152 centered, vertical) sections vertical gap = 40 px).
+ * Top → bottom visual order:
+ *   1. Hero (banner)
+ *   2. Price Movers 1 (▲ আজ দাম বেড়েছে) — 6 cards 3×2
+ *   3. Price Movers 2 (▼ আজ দাম কমেছে) — 6 cards 3×2
+ *   4. সব পণ্য — 33 cards 3×11 (All Products)
+ * Padding on main stack = 24 / 16 / 24 / 16 (top/right/bottom/left)
+ * Spacer above footer = 48 px.
+ */
+
 const SectionSkeleton = ({
   title,
-  subtitle,
   count = 6,
 }: {
   title: string;
-  subtitle?: string;
   count?: number;
 }) => (
-  <section className="py-10 md:py-14">
-    <div className="container mx-auto px-4">
-      <div className="mb-6 md:mb-10 text-center">
-        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-base-content mb-2 md:mb-3 animate-pulse">
-          {title}
-        </h2>
-        {subtitle && (
-          <p className="text-sm md:text-base text-base-content/60 max-w-2xl mx-auto animate-pulse">
-            {subtitle}
-          </p>
-        )}
-      </div>
-      <SkeletonGrid count={count} />
+  <section className="mx-auto w-full max-w-[1152px] px-4">
+    <div
+      className="h-7 w-64 rounded bg-[#F0F5F0] animate-pulse"
+      style={{ marginBottom: 12 }}
+    />
+    <div
+      className="grid w-full animate-pulse"
+      style={{
+        gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+        columnGap: 16,
+        rowGap: 16,
+      }}
+    >
+      {Array.from({ length: count }).map((_, i) => (
+        <div
+          key={i}
+          className="w-full rounded-2xl border border-[#E1E8E1] bg-[#FAFCFA]"
+          style={{ minHeight: 138 }}
+        />
+      ))}
     </div>
   </section>
 );
@@ -40,14 +56,15 @@ const EmptySection = ({
   title: string;
   message: string;
 }) => (
-  <section className="py-10 md:py-14">
-    <div className="container mx-auto px-4">
-      <div className="mb-6 md:mb-10 text-center">
-        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-base-content">
-          {title}
-        </h2>
-      </div>
-      <div className="text-center py-12 text-base-content/60">{message}</div>
+  <section className="mx-auto w-full max-w-[1152px] px-4">
+    <h2 className="font-bold text-[#1D271F]" style={{ fontSize: 20, lineHeight: 1.4 }}>
+      {title}
+    </h2>
+    <div
+      className="rounded-2xl border border-dashed border-[#E1E8E1] bg-[#FAFCFA] text-center"
+      style={{ padding: 48, marginTop: 12, color: "#1D271FB3", fontSize: 14 }}
+    >
+      {message}
     </div>
   </section>
 );
@@ -67,20 +84,22 @@ const HomeContent = () => {
 
   if (loading) {
     return (
-      <>
+      <div
+        className="flex flex-col mx-auto w-full"
+        style={{ rowGap: 40, padding: "24px 0" }}
+      >
         <SectionSkeleton title="আজ দাম বেড়েছে ▲" count={6} />
         <SectionSkeleton title="আজ দাম কমেছে ▼" count={6} />
-        <SectionSkeleton
-          title="সব পণ্য"
-          subtitle="সকল পণ্যের আজকের বাজার দাম"
-          count={8}
-        />
-      </>
+        <SectionSkeleton title="সব পণ্য" count={9} />
+      </div>
     );
   }
 
   return (
-    <>
+    <div
+      className="flex flex-col w-full"
+      style={{ rowGap: 40, padding: "24px 0" }}
+    >
       {risers.length > 0 ? (
         <ProductSection title="আজ দাম বেড়েছে ▲" products={risers} />
       ) : (
@@ -105,29 +124,33 @@ const HomeContent = () => {
         subtitle="সকল পণ্যের আজকের বাজার দাম"
         products={products}
       />
-    </>
+    </div>
   );
 };
 
 export default function Home() {
   return (
-    <div className="flex flex-col min-h-screen">
-      <Hero />
+    <div className="min-h-screen w-full flex flex-col">
+      {/* Hero */}
+      <div style={{ paddingTop: 40, paddingBottom: 40 }}>
+        <Hero />
+      </div>
+
+      {/* Sections stack:  Sections stack with vertical rowGap=40 */}
       <Suspense
         fallback={
-          <>
-            <SectionSkeleton title="আজ দাম বেড়েছে ▲" count={6} />
-            <SectionSkeleton title="আজ দাম কমেছে ▼" count={6} />
-            <SectionSkeleton
-              title="সব পণ্য"
-              subtitle="সকল পণ্যের আজকের বাজার দাম"
-              count={8}
-            />
-          </>
+          <div className="flex flex-col w-full" style={{ rowGap: 40 }}>
+          <SectionSkeleton title="আজ দাম বেড়েছে ▲" count={6} />
+          <SectionSkeleton title="আজ দাম কমেছে ▼" count={6} />
+          <SectionSkeleton title="সব পণ্য" count={9} />
+          </div>
         }
       >
         <HomeContent />
       </Suspense>
+
+      {/* Spacer 48 px above Footer (§3.2 L110) */}
+      <div style={{ height: 48 }} aria-hidden />
     </div>
   );
 }

@@ -9,10 +9,14 @@ import { getBanglaDate } from "@/lib/utils";
 import toast from "react-hot-toast";
 import { useState, useEffect } from "react";
 
-// Active link style — contrast ≥ 5.6:1  (emerald-700 bg + pure white text/semibold)
-const activeClass =
-  "bg-[var(--brand-primary)] text-white hover:bg-[var(--brand-primary-hover)] hover:text-white font-semibold shadow-sm";
-
+/**
+ * Navbar — exact Penpot "Header" spec:
+ *   Outer navbar: 118px total, base-100 bg #FAFCFA @ 95%
+ *   Bottom border 1px #E1E8E1 (base-300)
+ *   Row 1 (h 68): Logo + brand left | Sign In/Profile right
+ *   Row 2 (h 49): 8 category chips (h 32, r 8, pad 1/13)
+ *     Active chip: brand-primary bg + brand-on-primary text (contrast safe)
+ */
 const Navbar = () => {
   const pathname = usePathname();
   const { data: session } = useSession();
@@ -52,76 +56,107 @@ const Navbar = () => {
     pathname?.startsWith(`/category/${slug}/`);
 
   return (
-    <nav className="bg-base-100 shadow-sm sticky top-0 z-50 border-b border-base-300">
-      <div className="container mx-auto px-4">
-        <div className="navbar py-2">
-          <div className="navbar-start">
-            <div className="lg:hidden mr-2">
-              <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="btn btn-ghost btn-square"
-                aria-label="মোবাইল মেনু"
+    <nav className="sticky top-0 z-50 bg-[#FAFCFA]/95 backdrop-blur border-b border-[#E1E8E1]">
+      {/* ─── Row 1: h 68, container 1152, pad 12/16 ─── */}
+      <div className="mx-auto max-w-[1152px] px-4" style={{ height: 68 }}>
+        <div
+          className="flex items-center justify-between w-full h-full"
+          style={{ padding: "12px 0", columnGap: 12 }}
+        >
+          {/* LEFT: Brand + Logo + Bangla date (desktop) */}
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen((v) => !v)}
+              className="lg:hidden btn-ghost-penpot !min-h-[40px] !px-2"
+              aria-label="মোবাইল মেনু"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M4 6h16M4 12h16M4 18h16"
-                  />
-                </svg>
-              </button>
-            </div>
-            <Link href="/" className="flex flex-col items-start gap-0.5">
-              <div className="flex items-center gap-2">
-                <Image
-                  src="/logo-icon.png"
-                  alt="বাজার দর লোগো"
-                  width={40}
-                  height={40}
-                  priority
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M4 6h16M4 12h16M4 18h16"
                 />
-                <span className="text-xl font-bold text-primary">বাজার দর</span>
-              </div>
-              <span className="text-xs text-base-content/70 ml-1 hidden sm:inline">
+              </svg>
+            </button>
+            <Link
+              href="/"
+              className="flex items-center gap-2"
+              style={{ height: 44 }}
+            >
+              <Image
+                src="/logo-icon.png"
+                alt="বাজার দর লোগো"
+                width={18}
+                height={18}
+                priority
+                style={{ width: 18, height: 18 }}
+              />
+              <span
+                className="font-bold text-[#05893E]"
+                style={{ fontSize: 20, lineHeight: "28px" }}
+              >
+                বাজার দর
+              </span>
+              <span className="hidden md:inline text-xs text-[#1D271F]/70 ml-2">
                 {banglaDate}
               </span>
             </Link>
           </div>
 
-          <div className="navbar-end gap-2">
+          {/* RIGHT: Auth buttons / Profile */}
+          <div className="flex items-center gap-3">
             {session?.user ? (
-              <div className="dropdown dropdown-end">
+              <div className="relative">
                 <button
                   type="button"
-                  onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-                  className="btn btn-ghost gap-2"
+                  onClick={() => setProfileDropdownOpen((v) => !v)}
+                  className="btn-ghost-penpot"
                 >
-                  <div className="w-8 h-8 rounded-full bg-primary text-primary-content flex items-center justify-center text-sm font-bold">
+                  <div
+                    className="w-8 h-8 rounded-full bg-[#05893E] text-[#F3FBF4] flex items-center justify-center text-sm font-bold"
+                    aria-hidden
+                  >
                     {session.user.name?.charAt(0) || "ই"}
                   </div>
-                  <span className="hidden sm:inline text-sm font-medium">
-                    {session.user.name}
-                  </span>
+                  <span className="hidden sm:inline">{session.user.name}</span>
                 </button>
                 {profileDropdownOpen && (
-                  <ul className="dropdown-content menu bg-base-100 rounded-box z-10 w-52 p-2 shadow-lg mt-2">
+                  <ul
+                    className="absolute right-0 mt-2 w-52 rounded-xl bg-[#FAFCFA] border border-[#E1E8E1] p-2 shadow-lg z-20"
+                    role="menu"
+                  >
                     <li>
                       <Link
                         href="/profile"
                         onClick={() => setProfileDropdownOpen(false)}
+                        className="nav-chip w-full !justify-start"
                       >
                         প্রোফাইল
                       </Link>
                     </li>
                     <li>
-                      <button type="button" onClick={handleSignOut}>
+                      <Link
+                        href="/profile/update"
+                        onClick={() => setProfileDropdownOpen(false)}
+                        className="nav-chip w-full !justify-start"
+                      >
+                        আপডেট প্রোফাইল
+                      </Link>
+                    </li>
+                    <li>
+                      <button
+                        type="button"
+                        onClick={handleSignOut}
+                        className="nav-chip w-full !justify-start text-[#D03739] hover:!bg-[#FFF6F5]"
+                      >
                         সাইন আউট
                       </button>
                     </li>
@@ -129,37 +164,33 @@ const Navbar = () => {
                 )}
               </div>
             ) : (
-              <div className="flex gap-2">
-                <Link
-                  href="/signin"
-                  className={`btn btn-outline btn-sm ${
-                    pathname === "/signin" ? "btn-active" : ""
-                  }`}
-                >
+              <div className="flex items-center gap-3">
+                <Link href="/signin" className="btn-ghost-penpot">
                   সাইন ইন
                 </Link>
-                <Link
-                  href="/signup"
-                  className={`btn btn-primary btn-sm text-primary-content ${
-                    pathname === "/signup" ? "btn-active" : ""
-                  }`}
-                >
+                <Link href="/signup" className="btn-primary-penpot">
                   সাইন আপ
                 </Link>
               </div>
             )}
           </div>
         </div>
+      </div>
 
-        {/* Desktop Category Row */}
-        <div className="hidden lg:block border-t border-base-300 py-1">
-          <ul className="menu menu-horizontal px-1 gap-1 flex-wrap">
+      {/* ─── Row 2: h 49, categories chips, desktop only inline ─── */}
+      <div
+        className="border-t border-[#F0F5F0] hidden lg:block"
+        style={{ height: 49 }}
+      >
+        <div
+          className="mx-auto max-w-[1152px] px-4 flex items-center"
+          style={{ height: 48 }}
+        >
+          <ul className="flex items-center flex-wrap gap-1 w-full py-2">
             <li>
               <Link
                 href="/"
-                className={`rounded-lg text-sm ${
-                  isHomeActive ? activeClass : ""
-                }`}
+                className={`nav-chip ${isHomeActive ? "is-active" : ""}`}
               >
                 হোম
               </Link>
@@ -168,105 +199,103 @@ const Navbar = () => {
               <li key={category.id}>
                 <Link
                   href={`/category/${category.slug}`}
-                  className={`rounded-lg text-sm ${
-                    isCategoryActive(category.slug) ? activeClass : ""
+                  className={`nav-chip ${
+                    isCategoryActive(category.slug) ? "is-active" : ""
                   }`}
                 >
-                  <span className="mr-1">{category.icon}</span>
+                  <span aria-hidden>{category.icon}</span>
                   {category.name}
                 </Link>
               </li>
             ))}
           </ul>
         </div>
+      </div>
 
-        {/* Mobile Menu Drawer */}
-        {mobileMenuOpen && (
-          <div className="lg:hidden pb-4 border-t border-base-300 pt-3">
-            <span className="text-xs text-base-content/70 block mb-2">
+      {/* ─── Mobile Menu Drawer ─── */}
+      {mobileMenuOpen && (
+        <div className="lg:hidden border-t border-[#E1E8E1] bg-[#FAFCFA]">
+          <div className="mx-auto max-w-[1152px] px-4 py-3 flex flex-col gap-1">
+            <span className="text-xs text-[#1D271F]/70 md:hidden mb-1">
               {banglaDate}
             </span>
-            <ul className="menu menu-sm gap-1">
-              <li>
+            <Link
+              href="/"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`nav-chip ${isHomeActive ? "is-active" : ""}`}
+            >
+              হোম
+            </Link>
+            {categories.map((category) => (
+              <Link
+                key={category.id}
+                href={`/category/${category.slug}`}
+                onClick={() => setMobileMenuOpen(false)}
+                className={`nav-chip ${
+                  isCategoryActive(category.slug) ? "is-active" : ""
+                }`}
+              >
+                <span aria-hidden>{category.icon}</span>
+                {category.name}
+              </Link>
+            ))}
+            {!session?.user && (
+              <div className="mt-3 pt-3 border-t border-[#E1E8E1] flex flex-col gap-2">
                 <Link
-                  href="/"
+                  href="/signin"
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`rounded-lg ${isHomeActive ? activeClass : ""}`}
+                  className="btn-ghost-penpot w-full"
                 >
-                  হোম
+                  সাইন ইন
                 </Link>
-              </li>
-              {categories.map((category) => (
-                <li key={category.id}>
-                  <Link
-                    href={`/category/${category.slug}`}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className={`rounded-lg ${
-                      isCategoryActive(category.slug) ? activeClass : ""
-                    }`}
-                  >
-                    <span className="mr-2">{category.icon}</span>
-                    {category.name}
-                  </Link>
-                </li>
-              ))}
-              {!session?.user && (
-                <div className="mt-3 pt-3 border-t border-base-300 flex flex-col gap-2">
-                  <Link
-                    href="/signin"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="btn btn-outline btn-sm w-full"
-                  >
-                    সাইন ইন
-                  </Link>
-                  <Link
-                    href="/signup"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="btn btn-primary btn-sm w-full text-primary-content"
-                  >
-                    সাইন আপ
-                  </Link>
-                </div>
-              )}
-              {session?.user && (
-                <div className="mt-3 pt-3 border-t border-base-300">
-                  <div className="flex items-center gap-2 mb-2 px-2">
-                    <div className="w-8 h-8 rounded-full bg-primary text-primary-content flex items-center justify-center text-sm font-bold">
-                      {session.user.name?.charAt(0) || "ই"}
-                    </div>
-                    <span className="text-sm font-medium">
-                      {session.user.name}
-                    </span>
+                <Link
+                  href="/signup"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="btn-primary-penpot w-full"
+                >
+                  সাইন আপ
+                </Link>
+              </div>
+            )}
+            {session?.user && (
+              <div className="mt-3 pt-3 border-t border-[#E1E8E1] flex flex-col gap-1">
+                <div className="flex items-center gap-2 mb-2 px-2">
+                  <div className="w-8 h-8 rounded-full bg-[#05893E] text-[#F3FBF4] flex items-center justify-center text-sm font-bold">
+                    {session.user.name?.charAt(0) || "ই"}
                   </div>
-                  <ul className="gap-1">
-                    <li>
-                      <Link
-                        href="/profile"
-                        onClick={() => setMobileMenuOpen(false)}
-                        className="rounded-lg"
-                      >
-                        প্রোফাইল
-                      </Link>
-                    </li>
-                    <li>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          handleSignOut();
-                          setMobileMenuOpen(false);
-                        }}
-                        className="w-full text-left rounded-lg"
-                      >
-                        সাইন আউট
-                      </button>
-                    </li>
-                  </ul>
+                  <span className="text-sm font-medium">
+                    {session.user.name}
+                  </span>
                 </div>
-              )}
-            </ul>
+                <Link
+                  href="/profile"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="nav-chip"
+                >
+                  প্রোফাইল
+                </Link>
+                <Link
+                  href="/profile/update"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="nav-chip"
+                >
+                  আপডেট প্রোফাইল
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => {
+                    handleSignOut();
+                    setMobileMenuOpen(false);
+                  }}
+                  className="nav-chip !text-[#D03739] hover:!bg-[#FFF6F5]"
+                >
+                  সাইন আউট
+                </button>
+              </div>
+            )}
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </nav>
   );
 };

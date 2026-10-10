@@ -1,56 +1,42 @@
-import Image from "next/image";
-import Link from "next/link";
-
+/**
+ * Footer — exact Penpot spec §5.6
+ * Outer: 1440 × 69 full-width, top 1px base-300 #E1E8E1 border, bg base-100 #FAFCFA.
+ * Inner: centered 1152 × 68, padding 24/16 (top-right-bottom-left as spec),
+ *   justify-content: space-between; single row of 2 text nodes.
+ * Left side:  "বাজার দর — প্রয়োজনীয় পণ্যের দাম এক নজরে।" 14/400, #1D271F 100%
+ * Right side: "সকল দাম সম্ভাব্য; বাজার অবস্থার ওপর নির্ভর করে পরিবর্তিত হয়।" 14/400, #1D271F 100%
+ *   → Design explicitly has NO logo, NO additional quick links in Footer.
+ */
 const Footer = () => {
   return (
-    <footer className="bg-base-100 border-t border-base-300 py-6 mt-auto">
-      <div className="container mx-auto px-4">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-          <div className="flex items-center gap-3">
-            <Image
-              src="/logo-icon.png"
-              alt="বাজার দর লোগো"
-              width={36}
-              height={36}
-            />
-            <div className="flex flex-col">
-              <span className="font-bold text-lg text-primary">বাজার দর</span>
-              <p className="text-sm text-base-content/70">
-                প্রয়োজনীয় পণ্যের দাম এক নজরে।
-              </p>
-            </div>
-          </div>
-
-          <div className="text-center md:text-right">
-            <p className="text-sm text-base-content/70 max-w-md">
-              সকল দাম সম্ভাব্য; বাজার অবস্থার ওপর নির্ভর করে পরিবর্তিত হয়।
-            </p>
-            <div className="flex gap-4 justify-center md:justify-end mt-3 text-sm text-base-content/60">
-              <Link
-                href="/about"
-                className="hover:text-primary transition-colors"
-              >
-                আমাদের সম্পর্কে
-              </Link>
-              <Link
-                href="/contact"
-                className="hover:text-primary transition-colors"
-              >
-                যোগাযোগ
-              </Link>
-              <Link
-                href="/privacy"
-                className="hover:text-primary transition-colors"
-              >
-                গোপনীয়তা নীতি
-              </Link>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-6 pt-4 border-t border-base-300 text-center text-xs text-base-content/50">
-          © ২০২৬ বাজার দর। সর্বস্বত্ব সংরক্ষিত।
-        </div>
+    <footer
+      className="w-full bg-[#FAFCFA]"
+      style={{ borderTop: "1px solid #E1E8E1", minHeight: 69 }}
+    >
+      <div
+        className="mx-auto max-w-[1152px] px-4 w-full"
+        style={{
+          minHeight: 68,
+          padding: "24px 16px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          flexWrap: "wrap",
+          rowGap: 12,
+        }}
+      >
+        <p
+          className="m-0 text-[#1D271F]"
+          style={{ fontSize: 14, fontWeight: 400, lineHeight: 1.4286 }}
+        >
+          বাজার দর — প্রয়োজনীয় পণ্যের দাম এক নজরে।
+        </p>
+        <p
+          className="m-0 text-[#1D271F]"
+          style={{ fontSize: 14, fontWeight: 400, lineHeight: 1.4286 }}
+        >
+          © ২০২৬ · সকল দাম সম্ভাব্য; বাজার অবস্থার ওপর নির্ভর করে পরিবর্তিত হয়।
+        </p>
       </div>
     </footer>
   );

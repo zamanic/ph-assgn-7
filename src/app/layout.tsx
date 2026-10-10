@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Hind_Siliguri } from "next/font/google";
 import { Suspense } from "react";
 import "./globals.css";
 import Providers from "@/providers/Providers";
@@ -9,14 +9,16 @@ import Footer from "@/components/shared/Footer";
 import PriceTicker from "@/components/shared/PriceTicker";
 import { Toaster } from "react-hot-toast";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+/**
+ * Single font family per Penpot DESIGN_TOKENS_REPORT.md §2:
+ *   "Hind Siliguri" (Google Font) — weights 400, 500, 600, 700.
+ *   Supports both Bengali and Latin glyphs.
+ */
+const hindSiliguri = Hind_Siliguri({
+  variable: "--font-hind-siliguri",
+  subsets: ["bengali", "latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -24,34 +26,35 @@ export const metadata: Metadata = {
   description: "প্রয়োজনীয় পণ্যের বর্তমান বাজার দাম এক নজরে দেখুন",
 };
 
-// Simple skeleton navbar shown while the real navbar (usePathname) streams in
+// ────────────────────────────────────────────────────────────
+// Fallback skeletons (shown while Suspend-bound Navbar/Ticker stream in)
+// They mirror the exact heights of the real components to avoid layout shift.
+// ────────────────────────────────────────────────────────────
 function NavbarFallback() {
   return (
-    <nav className="bg-base-100 shadow-sm sticky top-0 z-50 border-b border-base-300">
-      <div className="container mx-auto px-4">
-        <div className="navbar py-2">
-          <div className="navbar-start">
-            <div className="flex flex-col items-start gap-0.5">
-              <div className="flex items-center gap-2">
-                <div className="h-10 w-10 animate-pulse bg-base-200 rounded-lg" />
-                <div className="h-6 w-28 animate-pulse bg-base-200 rounded" />
-              </div>
-            </div>
+    <nav
+      className="sticky top-0 z-50 bg-[#FAFCFA]/95 border-b border-[#E1E8E1]"
+      style={{ height: 118 }}
+    >
+      {/* Row 1 — h 68 */}
+      <div className="mx-auto max-w-[1152px] px-4" style={{ height: 68 }}>
+        <div className="flex items-center justify-between h-full">
+          <div className="flex items-center gap-2">
+            <div className="h-10 w-10 rounded-lg bg-[#F0F5F0] animate-pulse" />
+            <div className="h-5 w-24 rounded bg-[#F0F5F0] animate-pulse" />
           </div>
-          <div className="navbar-end gap-2">
-            <div className="h-9 w-24 animate-pulse bg-base-200 rounded-lg" />
-            <div className="h-9 w-24 animate-pulse bg-base-200 rounded-lg" />
-          </div>
+          <div className="h-10 w-[118px] rounded-lg bg-[#F0F5F0] animate-pulse" />
         </div>
-        <div className="hidden lg:block border-t border-base-300 py-2">
-          <div className="flex gap-2 flex-wrap">
-            {Array.from({ length: 7 }).map((_, i) => (
-              <div
-                key={i}
-                className="h-7 w-20 animate-pulse bg-base-200 rounded-lg"
-              />
-            ))}
-          </div>
+      </div>
+      {/* Row 2 — h 49 */}
+      <div className="border-t border-[#F0F5F0]" style={{ height: 49 }}>
+        <div className="mx-auto max-w-[1152px] px-4 py-2 flex items-center gap-1 h-full overflow-hidden">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div
+              key={i}
+              className="h-8 w-16 rounded-lg bg-[#F0F5F0] animate-pulse"
+            />
+          ))}
         </div>
       </div>
     </nav>
@@ -60,8 +63,15 @@ function NavbarFallback() {
 
 function TickerFallback() {
   return (
-    <div className="bg-base-100 border-b border-base-300 py-2 overflow-hidden">
-      <div className="animate-pulse h-6 bg-base-200 rounded mx-auto w-full max-w-4xl" />
+    <div
+      className="bg-[#FAFCFA] overflow-hidden"
+      style={{
+        height: 37,
+        borderTop: "1px solid #E1E8E1",
+        borderBottom: "1px solid #E1E8E1",
+      }}
+    >
+      <div className="h-6 mx-auto w-full max-w-4xl bg-[#F0F5F0] animate-pulse mt-[5px] rounded" />
     </div>
   );
 }
@@ -72,11 +82,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html
-      lang="bn"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col bg-base-200">
+    <html lang="bn" className={`${hindSiliguri.variable} h-full antialiased`}>
+      <body className="min-h-full flex flex-col bg-[#F0F5F0]">
         <Providers>
           <AppProvider>
             <Suspense fallback={<NavbarFallback />}>
@@ -92,34 +99,34 @@ export default function RootLayout({
               toastOptions={{
                 duration: 4000,
                 style: {
-                  background: "#111827",
-                  color: "#ffffff",
-                  borderRadius: "0.5rem",
-                  fontSize: "0.875rem",
-                  border: "1px solid #374151",
+                  background: "#1D271F" /* Penpot base-content */,
+                  color: "#FAFCFA" /* base-100 on dark */,
+                  borderRadius: 8,
+                  fontSize: 14,
+                  border: "1px solid #2E3A30",
                 },
                 success: {
                   duration: 3000,
                   style: {
-                    background: "#15803d",
-                    border: "1px solid #166534",
-                    color: "#ffffff",
+                    background: "#1A9951" /* success rgb(26,153,81) */,
+                    border: "1px solid #148244",
+                    color: "#F3FBF4" /* primary-content */,
                   },
                   iconTheme: {
-                    primary: "#ffffff",
-                    secondary: "#15803d",
+                    primary: "#F3FBF4",
+                    secondary: "#1A9951",
                   },
                 },
                 error: {
                   duration: 4000,
                   style: {
-                    background: "#b91c1c",
-                    border: "1px solid #991b1b",
-                    color: "#ffffff",
+                    background: "#D03739" /* error rgb(208,55,57) */,
+                    border: "1px solid #B02D2F" /* hover.error-border */,
+                    color: "#FFF6F5" /* error-content */,
                   },
                   iconTheme: {
-                    primary: "#ffffff",
-                    secondary: "#b91c1c",
+                    primary: "#FFF6F5",
+                    secondary: "#D03739",
                   },
                 },
               }}
