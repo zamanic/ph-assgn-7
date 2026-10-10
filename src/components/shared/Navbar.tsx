@@ -2,13 +2,18 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useSession, signOut } from "@/lib/auth-client";
 import { useApp } from "@/context/AppContext";
 import { getBanglaDate } from "@/lib/utils";
 import toast from "react-hot-toast";
 import { useState, useEffect } from "react";
 
+const activeClass =
+  "bg-primary text-primary-content hover:bg-primary hover:text-primary-content font-semibold";
+
 const Navbar = () => {
+  const pathname = usePathname();
   const { data: session } = useSession();
   const { categories } = useApp();
   const [banglaDate, setBanglaDate] = useState("");
@@ -18,6 +23,12 @@ const Navbar = () => {
   useEffect(() => {
     setBanglaDate(getBanglaDate());
   }, []);
+
+  // Close dropdowns on route change
+  useEffect(() => {
+    setMobileMenuOpen(false);
+    setProfileDropdownOpen(false);
+  }, [pathname]);
 
   const handleSignOut = async () => {
     try {
@@ -33,6 +44,11 @@ const Navbar = () => {
       toast.error("সাইন আউট করতে সমস্যা হয়েছে");
     }
   };
+
+  const isHomeActive = pathname === "/";
+  const isCategoryActive = (slug: string) =>
+    pathname === `/category/${slug}` ||
+    pathname?.startsWith(`/category/${slug}/`);
 
   return (
     <nav className="bg-base-100 shadow-sm sticky top-0 z-50 border-b border-base-300">
@@ -82,6 +98,7 @@ const Navbar = () => {
             {session?.user ? (
               <div className="dropdown dropdown-end">
                 <button
+                  type="button"
                   onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
                   className="btn btn-ghost gap-2"
                 >
@@ -103,19 +120,28 @@ const Navbar = () => {
                       </Link>
                     </li>
                     <li>
-                      <button onClick={handleSignOut}>সাইন আউট</button>
+                      <button type="button" onClick={handleSignOut}>
+                        সাইন আউট
+                      </button>
                     </li>
                   </ul>
                 )}
               </div>
             ) : (
               <div className="flex gap-2">
-                <Link href="/signin" className="btn btn-outline btn-sm">
+                <Link
+                  href="/signin"
+                  className={`btn btn-outline btn-sm ${
+                    pathname === "/signin" ? "btn-active" : ""
+                  }`}
+                >
                   সাইন ইন
                 </Link>
                 <Link
                   href="/signup"
-                  className="btn btn-primary btn-sm text-primary-content"
+                  className={`btn btn-primary btn-sm text-primary-content ${
+                    pathname === "/signup" ? "btn-active" : ""
+                  }`}
                 >
                   সাইন আপ
                 </Link>
@@ -124,10 +150,16 @@ const Navbar = () => {
           </div>
         </div>
 
+        {/* Desktop Category Row */}
         <div className="hidden lg:block border-t border-base-300 py-1">
           <ul className="menu menu-horizontal px-1 gap-1 flex-wrap">
             <li>
-              <Link href="/" className="rounded-lg text-sm">
+              <Link
+                href="/"
+                className={`rounded-lg text-sm ${
+                  isHomeActive ? activeClass : ""
+                }`}
+              >
                 হোম
               </Link>
             </li>
@@ -135,7 +167,9 @@ const Navbar = () => {
               <li key={category.id}>
                 <Link
                   href={`/category/${category.slug}`}
-                  className="rounded-lg text-sm"
+                  className={`rounded-lg text-sm ${
+                    isCategoryActive(category.slug) ? activeClass : ""
+                  }`}
                 >
                   <span className="mr-1">{category.icon}</span>
                   {category.name}
@@ -145,6 +179,7 @@ const Navbar = () => {
           </ul>
         </div>
 
+        {/* Mobile Menu Drawer */}
         {mobileMenuOpen && (
           <div className="lg:hidden pb-4 border-t border-base-300 pt-3">
             <span className="text-xs text-base-content/70 block mb-2">
@@ -155,7 +190,7 @@ const Navbar = () => {
                 <Link
                   href="/"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="rounded-lg"
+                  className={`rounded-lg ${isHomeActive ? activeClass : ""}`}
                 >
                   হোম
                 </Link>
@@ -165,7 +200,9 @@ const Navbar = () => {
                   <Link
                     href={`/category/${category.slug}`}
                     onClick={() => setMobileMenuOpen(false)}
-                    className="rounded-lg"
+                    className={`rounded-lg ${
+                      isCategoryActive(category.slug) ? activeClass : ""
+                    }`}
                   >
                     <span className="mr-2">{category.icon}</span>
                     {category.name}
@@ -212,6 +249,7 @@ const Navbar = () => {
                     </li>
                     <li>
                       <button
+                        type="button"
                         onClick={() => {
                           handleSignOut();
                           setMobileMenuOpen(false);
