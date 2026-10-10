@@ -251,67 +251,149 @@ export function normalizeCategories(data: any[]): Category[] {
 
 // ========================================================================
 // Fetch wrappers — return TYPED & normalized arrays / objects
+//
+// FALLBACK POLICY (implemented because api.api-store.workers.dev returns
+// HTTP 429 Too Many Requests when hit from this IP — this caused constant
+// toast errors "ক্যাটাগরি ডেটা লোড করতে সমস্যা হয়েছে" every page load).
+//
+//   1. Try primary URL once.
+//   2. On 429 / 5xx / network error → wait 200 ms → retry 1×.
+//   3. Still failing → resolve SILENTLY with getSeed*() data from src/data/seed.ts.
+//   4. NEVER throw to the UI layer (no more spurious toasts).
+//   5. Return `{ data, fromFallback }` via `...WithMeta` helpers so the UI can
+//      optionally show ONE informational toast (debounced per browser session).
 // ========================================================================
 
-export async function fetchProducts(category?: string): Promise<Product[]> {
+import {
+  getSeedCategories,
+  getSeedCategoryBySlug,
+  getSeedProductById,
+  getSeedProducts,
+} from "@/data/seed";
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+/** Attempts fetch; returns either parsed JSON data T or null if unrecoverable */
+async function tryFetchOnce<T = any>(
+  url: string,
+  init?: RequestInit,
+): Promise<T | null> {
+  try {
+    const res = await fetch(url, init);
+    if (!res.ok) {
+      // 429 / 5xx — treat as retryable by returning null (caller retries)
+      if (res.status === 429 || res.status >= 500) return null;
+      // 4xx (404/400) — non recoverable API logic error, fallback
+      return null;
+    }
+    const text = await res.text();
+    if (!text) return null;
+    try {
+      return JSON.parse(text) as T;
+    } catch {
+      return null;
+    }
+  } catch {
+    // Network failure (DNS/timeout/abort)
+    return null;
+  }
+}
+
+async function fetchWithFallback<T = any>(url: string): Promise<T | null> {
+  const options: RequestInit = { cache: "no-store" };
+  const first = await tryFetchOnce<T>(url, options);
+  if (first !== null) return first;
+  await sleep(200);
+  const second = await tryFetchOnce<T>(url, options);
+  if (second !== null) return second;
+  return null;
+}
+
+export interface FetchMeta {
+  fromFallback: boolean;
+}
+
+export async function fetchProductsWithMeta(category?: string): Promise<{
+  data: Product[];
+} & FetchMeta> {
   const url = category
     ? `${API_BASE}/products?category=${encodeURIComponent(category)}`
     : `${API_BASE}/products`;
-  const res = await fetch(url, { cache: "no-store" });
-  if (!res.ok) throw new Error(`Failed to fetch products: ${res.status}`);
-  const data = await res.json();
-  return normalizeProducts(data);
+  const raw = await fetchWithFallback<any[]>(url);
+  if (Array.isArray(raw) && raw.length > 0) {
+    const normalized = normalizeProducts(raw);
+    if (normalized.length > 0) return { data: normalized, fromFallback: false };
+  }
+  return { data: getSeedProducts(category), fromFallback: true };
+}
+
+export async function fetchProducts(category?: string): Promise<Product[]> {
+  const { data } = await fetchProductsWithMeta(category);
+  return data;
+}
+
+export async function fetchProductWithMeta(
+  id: string | number,
+): Promise<{ data: Product | null } & FetchMeta> {
+  const url = `${API_BASE}/products/${encodeURIComponent(String(id))}`;
+  const raw = await fetchWithFallback<any>(url);
+  if (raw) {
+    const p = normalizeProduct(raw);
+    if (p && p.id) return { data: p, fromFallback: false };
+  }
+  // Fallback #1: full-list lookup
+  const list = await fetchProductsWithMeta();
+  if (list.data.length > 0) {
+    const found =
+      list.data.find((p) => String(p.id) === String(id)) ||
+      list.data.find((p) => p.slug === String(id));
+    if (found) return { data: found, fromFallback: list.fromFallback };
+  }
+  // Fallback #2: static seed by id/slug
+  return { data: getSeedProductById(id), fromFallback: true };
 }
 
 export async function fetchProduct(
   id: string | number,
 ): Promise<Product | null> {
-  const res = await fetch(
-    `${API_BASE}/products/${encodeURIComponent(String(id))}`,
-    {
-      cache: "no-store",
-    },
-  );
-  if (!res.ok) {
-    // Fallback: look up by numeric id in the full list
-    try {
-      const all = await fetchProducts();
-      const byId =
-        all.find((p) => String(p.id) === String(id)) ||
-        all.find((p) => p.slug === String(id));
-      return byId || null;
-    } catch {
-      return null;
-    }
+  const { data } = await fetchProductWithMeta(id);
+  return data;
+}
+
+export async function fetchCategoriesWithMeta(): Promise<{
+  data: Category[];
+} & FetchMeta> {
+  const raw = await fetchWithFallback<any[]>(`${API_BASE}/categories`);
+  if (Array.isArray(raw) && raw.length > 0) {
+    const normalized = normalizeCategories(raw);
+    if (normalized.length > 0) return { data: normalized, fromFallback: false };
   }
-  const raw = await res.json();
-  if (!raw) return null;
-  return normalizeProduct(raw);
+  return { data: getSeedCategories(), fromFallback: true };
 }
 
 export async function fetchCategories(): Promise<Category[]> {
-  const res = await fetch(`${API_BASE}/categories`, { cache: "no-store" });
-  if (!res.ok) throw new Error(`Failed to fetch categories: ${res.status}`);
-  const data = await res.json();
-  return normalizeCategories(data);
+  const { data } = await fetchCategoriesWithMeta();
+  return data;
+}
+
+export async function fetchCategoryWithMeta(slug: string): Promise<{
+  data: Category | null;
+} & FetchMeta> {
+  const url = `${API_BASE}/categories/${encodeURIComponent(slug)}`;
+  const raw = await fetchWithFallback<any>(url);
+  if (raw) {
+    const c = normalizeCategory(raw);
+    if (c && c.id) return { data: c, fromFallback: false };
+  }
+  const list = await fetchCategoriesWithMeta();
+  if (list.data.length > 0) {
+    const found = list.data.find((c) => c.slug === slug || c.id === slug);
+    if (found) return { data: found, fromFallback: list.fromFallback };
+  }
+  return { data: getSeedCategoryBySlug(slug), fromFallback: true };
 }
 
 export async function fetchCategory(slug: string): Promise<Category | null> {
-  const res = await fetch(
-    `${API_BASE}/categories/${encodeURIComponent(slug)}`,
-    {
-      cache: "no-store",
-    },
-  );
-  if (!res.ok) {
-    try {
-      const all = await fetchCategories();
-      return all.find((c) => c.slug === slug || c.id === slug) || null;
-    } catch {
-      return null;
-    }
-  }
-  const raw = await res.json();
-  if (!raw) return null;
-  return normalizeCategory(raw);
+  const { data } = await fetchCategoryWithMeta(slug);
+  return data;
 }
