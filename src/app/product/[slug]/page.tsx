@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, use } from "react";
 import { useSession } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -12,8 +12,10 @@ import LoadingSkeleton from "./loading";
 export default function ProductDetailPage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
+  // Next.js 16+: params is a Promise; must unwrap with React.use() synchronously during render
+  const { slug } = use(params);
   const { data: session, isPending: sessionPending } = useSession();
   const router = useRouter();
   const [product, setProduct] = useState<Product | null>(null);
@@ -21,9 +23,10 @@ export default function ProductDetailPage({
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!slug) return;
     if (sessionPending) return;
     if (!session) {
-      const callbackUrl = encodeURIComponent(`/product/${params.slug}`);
+      const callbackUrl = encodeURIComponent(`/product/${slug}`);
       toast.error("এই পেজ দেখতে লগইন করুন");
       router.replace(`/signin?callbackUrl=${callbackUrl}`);
       return;
@@ -35,8 +38,8 @@ export default function ProductDetailPage({
         // Use NORMALIZED helper so todayPrice/minPrice/maxPrice/prices exist
         const products = await fetchProducts();
         const found =
-          products.find((p) => p.slug === params.slug) ||
-          products.find((p) => String(p.id) === params.slug);
+          products.find((p) => p.slug === slug) ||
+          products.find((p) => String(p.id) === slug);
         if (!found) {
           setError("পণ্যটি পাওয়া যায়নি");
         } else {
@@ -51,7 +54,7 @@ export default function ProductDetailPage({
     };
 
     fetchProductData();
-  }, [session, sessionPending, params.slug, router]);
+  }, [session, sessionPending, slug, router]);
 
   if (sessionPending || loading) {
     return <LoadingSkeleton />;

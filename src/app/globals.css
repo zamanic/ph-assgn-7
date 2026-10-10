@@ -1,32 +1,72 @@
 @import "tailwindcss";
+@import "@heroui/styles";
 @plugin "daisyui";
+/* Note: @heroui/theme/plugin crashes Tailwind v4 Turbopack (b is not a function).
+   HeroUI token mapping is provided below manually via @theme inline using the same CSS vars. */
 
 @custom-variant dark (&:where([data-theme="dark"]));
 
+/*
+  WCAG 2.1 AA contrast-safe tokens.
+  Minimum contrast ratios for AA:
+    Normal text:  4.5 : 1  against white/light backgrounds
+    Large text :  3.0 : 1
+  Primary green on white  #047857 / #fff  ≈ 5.6:1 ✅
+  Danger red   on white  #b91c1c / #fff  ≈ 6.6:1 ✅
+  Success green on white #15803d / #fff  ≈ 6.2:1 ✅
+  Neutral text on bg-50  #1f2937 / #f9fafb ≈ 15.5:1 ✅
+*/
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Surfaces */
+  --background: #f9fafb; /* bg-gray-50 */
+  --surface: #ffffff; /* card surface */
+  --foreground: #0f172a; /* slate-900 (max contrast) */
+  --foreground-muted: #334155; /* slate-700 */
+
+  /* Brand — high-contrast dark emerald instead of pale */
+  --brand-primary: #047857; /* emerald-700 — AA on white: 5.6:1 */
+  --brand-primary-hover: #065f46;
+  --brand-on-primary: #ffffff; /* white text on brand-green = 5.6:1 ✅ */
+
+  /* Status */
+  --danger: #b91c1c;
+  --on-danger: #ffffff;
+  --success: #15803d;
+  --on-success: #ffffff;
+  --warning: #b45309;
+  --neutral-muted: #475569;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-primary: #059669;
-  --color-primary-dark: #047857;
-  --color-secondary: #f97316;
-  --color-danger: #ef4444;
-  --color-success: #22c55e;
-  --color-warning: #f59e0b;
-  --color-neutral: #6b7280;
+  --color-foreground-muted: var(--foreground-muted);
+
+  /* DaisyUI primary (btn-primary, badge-primary etc.) + HeroUI primary inherit */
+  --color-primary: var(--brand-primary);
+  --color-primary-content: var(--brand-on-primary);
+  --color-primary-dark: var(--brand-primary-hover);
+  --color-secondary: #c2410c; /* orange-700 — contrast 6.0:1 on white */
+  --color-secondary-content: #ffffff;
+  --color-danger: var(--danger);
+  --color-danger-content: var(--on-danger);
+  --color-error: var(--danger);
+  --color-error-content: var(--on-danger);
+  --color-success: var(--success);
+  --color-success-content: var(--on-success);
+  --color-warning: var(--warning);
+  --color-warning-content: #ffffff;
+  --color-neutral: var(--neutral-muted);
+  --color-neutral-content: #ffffff;
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #f9fafb;
-    --foreground: #111827;
-  }
+/* Light-only application (exam-friendly). Keep 4.5:1 everywhere by avoiding light grey on light gray text. */
+html,
+body {
+  color-scheme: light;
 }
 
 body {
@@ -35,6 +75,7 @@ body {
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }
 
+/* ===== Marquee ===== */
 @keyframes marquee {
   0% {
     transform: translateX(0);
@@ -43,15 +84,14 @@ body {
     transform: translateX(-50%);
   }
 }
-
 .animate-marquee {
   animation: marquee 30s linear infinite;
 }
-
 .animate-marquee:hover {
   animation-play-state: paused;
 }
 
+/* ===== Scroll ===== */
 html {
   scroll-behavior: smooth;
 }

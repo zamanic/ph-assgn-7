@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { Button } from "@heroui/react";
 
 const Hero = () => {
   return (
@@ -18,14 +19,18 @@ const Hero = () => {
               <span className="text-primary">এক নজরে</span>
             </h1>
             <p className="text-base md:text-lg text-base-content/70 max-w-xl mx-auto lg:mx-0 mb-6 md:mb-8 leading-relaxed">
-              আপনার প্রিয় পণ্যের আজকের বাজার দাম দেখুন, তুলনা করুন এবং সঠিক সিদ্ধান্ত নিন।
+              আপনার প্রিয় পণ্যের আজকের বাজার দাম দেখুন, তুলনা করুন এবং সঠিক
+              সিদ্ধান্ত নিন।
             </p>
-            <a
-              href="#সব-পণ্য"
-              className="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-content font-semibold px-6 md:px-8 py-3 md:py-3.5 rounded-xl shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all duration-300 hover:-translate-y-0.5"
-            >
-              সব পণ্য দেখুন
-              <span className="text-xl">→</span>
+            <a href="#সব-পণ্য" className="inline-block">
+              <Button
+                variant="primary"
+                size="lg"
+                className="rounded-xl font-semibold px-6 md:px-8 py-6 text-base md:text-lg shadow-lg shadow-emerald-900/20 hover:translate-y-[-1px] transition"
+              >
+                সব পণ্য দেখুন
+                <span aria-hidden>→</span>
+              </Button>
             </a>
           </div>
           <div className="flex-1 w-full max-w-lg lg:max-w-none">

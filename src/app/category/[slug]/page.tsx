@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, use } from "react";
 import Link from "next/link";
 import { useApp } from "@/context/AppContext";
 import type { SortOption } from "@/types";
@@ -10,22 +10,24 @@ import LoadingSkeleton from "./loading";
 export default function CategoryPage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
+  // Next.js 16+: params is a Promise — unwrap synchronously
+  const { slug } = use(params);
   const { products, categories, loading } = useApp();
   const [sortOption, setSortOption] = useState<SortOption>("default");
 
   useEffect(() => {
     setSortOption("default");
-  }, [params.slug]);
+  }, [slug]);
 
   const category = categories.find(
-    (c) => c.slug === params.slug || c.name === params.slug
+    (c) => c.slug === slug || c.name === slug
   );
 
   const filteredProducts = useMemo(() => {
     let result = products.filter(
-      (p) => p.category === params.slug || p.categoryName === params.slug
+      (p) => p.category === slug || p.categoryName === slug
     );
 
     if (!category && result.length === 0) {
@@ -33,7 +35,7 @@ export default function CategoryPage({
         (c) =>
           c.name ===
           products.find(
-            (p) => p.category === params.slug || p.categoryName === params.slug
+            (p) => p.category === slug || p.categoryName === slug
           )?.categoryName
       );
       if (catMatch) {
@@ -55,13 +57,13 @@ export default function CategoryPage({
     }
 
     return result;
-  }, [products, categories, params.slug, sortOption, category]);
+  }, [products, categories, slug, sortOption, category]);
 
   const sortOptions: { value: SortOption; label: string }[] = [
-    { value: "default", label: "ডিফল্ট" },
-    { value: "price-asc", label: "দাম: কম থেকে বেশি" },
-    { value: "price-desc", label: "দাম: বেশি থেকে কম" },
-  ];
+  { value: "default", label: "ডিফল্ট" },
+  { value: "price-asc", label: "দাম: কম থেকে বেশি" },
+  { value: "price-desc", label: "দাম: বেশি থেকে কম" },
+];
 
   if (loading) {
     return <LoadingSkeleton />;
@@ -73,8 +75,8 @@ export default function CategoryPage({
       ? {
           name: filteredProducts[0].categoryName,
           icon: "📦",
-          slug: params.slug,
-          id: params.slug,
+          slug,
+          id: slug,
         }
       : null);
 

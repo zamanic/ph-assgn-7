@@ -9,8 +9,9 @@ import { getBanglaDate } from "@/lib/utils";
 import toast from "react-hot-toast";
 import { useState, useEffect } from "react";
 
+// Active link style — contrast ≥ 5.6:1  (emerald-700 bg + pure white text/semibold)
 const activeClass =
-  "bg-primary text-primary-content hover:bg-primary hover:text-primary-content font-semibold";
+  "bg-[var(--brand-primary)] text-white hover:bg-[var(--brand-primary-hover)] hover:text-white font-semibold shadow-sm";
 
 const Navbar = () => {
   const pathname = usePathname();
