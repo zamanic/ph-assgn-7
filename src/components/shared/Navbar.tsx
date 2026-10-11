@@ -99,15 +99,20 @@ const Navbar = () => {
                 priority
                 style={{ width: 18, height: 18 }}
               />
-              <span
-                className="font-bold text-[#05893E]"
-                style={{ fontSize: 20, lineHeight: "28px" }}
-              >
-                বাজার দর
-              </span>
-              <span className="hidden md:inline text-xs text-[#1D271F]/70 ml-2">
-                {banglaDate}
-              </span>
+              <div className="flex flex-col leading-none">
+                <span
+                  className="font-bold text-[#05893E]"
+                  style={{ fontSize: 20, lineHeight: "24px" }}
+                >
+                  বাজার দর
+                </span>
+                <span
+                  className="text-xs text-[#1D271F]/70"
+                  style={{ fontSize: 11, lineHeight: "16px", marginTop: 2 }}
+                >
+                  {banglaDate}
+                </span>
+              </div>
             </Link>
           </div>
 

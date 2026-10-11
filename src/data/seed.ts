@@ -1,28 +1,27 @@
 /* ========================================================================
    Seed / FALLBACK DATASET
    ========================================================================
-   Penpot-design-aligned 8 categories + 33 realistic Bengali-market products.
-   Used as OFFLINE FALLBACK when the upstream api.api-store.workers.dev API returns
-   429 Too Many Requests, 5xx, or network errors. 429 — typically happens
-   because the dev IP hits Cloudflare rate-limited.
-   Always returned SILENTLY (no UI toasts) from here.
+   8 categories (matches openapi.programming-hero.com/api/bazardor/categories)
+   + 33 realistic Bengali-market products.
+   Used as OFFLINE FALLBACK when the upstream API returns 429 Too Many Requests,
+   5xx, or network errors. Always returned SILENTLY (no UI toasts).
 
-   Values use deterministic prices use a 5-minute windowed random so prices drift naturally, so the
-   UI never shows static numbers on every component re-render.
+   Prices use a 5-minute windowed jitter so numbers drift naturally but stay
+   stable across StrictMode double-render (no randomness-per-render FOUC).
    ========================================================================= */
 
 import type { Category, Product } from "@/types";
 
-/* ── 8 Categories ─────────────────────────────────────────────────────────────── */
+/* ── 8 Categories (exact match to openapi.programming-hero.com) ────────── */
 export const SEED_CATEGORIES: Category[] = [
-  { id: "cat-chal", slug: "chal", name: "চাল", icon: "🌾" },
-  { id: "cat-dal", slug: "dal", name: "ডাল", icon: "🫘" },
-  { id: "cat-tel", slug: "tel", name: "তেল", icon: "🛢️" },
-  { id: "cat-mosla", slug: "mosla", name: "মশলা", icon: "🌶️" },
-  { id: "cat-sobji", slug: "sobji", name: "সবজি", icon: "🥬" },
-  { id: "cat-phol", slug: "phol", name: "ফল", icon: "🍎" },
-  { id: "cat-mangsho", slug: "mangsho", name: "মাংস", icon: "🍖" },
-  { id: "cat-dugdho", slug: "dugdho", name: "দুগ্ধজাত", icon: "🥛" },
+  { id: "chal", slug: "chal", name: "চাল", icon: "🍚" },
+  { id: "dal", slug: "dal", name: "ডাল", icon: "🫘" },
+  { id: "tel", slug: "tel", name: "তেল", icon: "🛢️" },
+  { id: "sobji", slug: "sobji", name: "সবজি", icon: "🥬" },
+  { id: "mach", slug: "mach", name: "মাছ", icon: "🐟" },
+  { id: "mangsho", slug: "mangsho", name: "মাংস", icon: "🍗" },
+  { id: "dim-dui", slug: "dim-dui", name: "ডিম-দুধ", icon: "🥛" },
+  { id: "mosla", slug: "mosla", name: "মসলা", icon: "🌶️" },
 ];
 
 /* ── 33 Products ──────────────────────────────────────────────────────────── */
@@ -879,8 +878,8 @@ const RAW: RawSeed[] = [
     slug: "aam",
     name: "আম",
     emoji: "🍎",
-    category: "phol",
-    categoryName: "ফল",
+    category: "mach",
+    categoryName: "মাছ",
     unit: "কেজি",
     basePrice: 180,
     min: 170,
@@ -916,8 +915,8 @@ const RAW: RawSeed[] = [
     slug: "apple",
     name: "আপেল",
     emoji: "🍎",
-    category: "phol",
-    categoryName: "ফল",
+    category: "mach",
+    categoryName: "মাছ",
     unit: "কেজি",
     basePrice: 220,
     min: 215,
@@ -953,8 +952,8 @@ const RAW: RawSeed[] = [
     slug: "kathal",
     name: "কাঁঠাল",
     emoji: "🍎",
-    category: "phol",
-    categoryName: "ফল",
+    category: "mach",
+    categoryName: "মাছ",
     unit: "কেজি",
     basePrice: 80,
     min: 70,
@@ -990,8 +989,8 @@ const RAW: RawSeed[] = [
     slug: "kola",
     name: "কলা",
     emoji: "🍎",
-    category: "phol",
-    categoryName: "ফল",
+    category: "mach",
+    categoryName: "মাছ",
     unit: "ডজন",
     basePrice: 60,
     min: 55,
@@ -1142,8 +1141,8 @@ const RAW: RawSeed[] = [
     slug: "dudh",
     name: "গরুর দুধ",
     emoji: "🥛",
-    category: "dugdho",
-    categoryName: "দুগ্ধজাত",
+    category: "dim-dui",
+    categoryName: "ডিম-দুধ",
     unit: "লিটার",
     basePrice: 110,
     min: 100,
@@ -1179,8 +1178,8 @@ const RAW: RawSeed[] = [
     slug: "ghee",
     name: "ঘি",
     emoji: "🥛",
-    category: "dugdho",
-    categoryName: "দুগ্ধজাত",
+    category: "dim-dui",
+    categoryName: "ডিম-দুধ",
     unit: "কেজি",
     basePrice: 1200,
     min: 1150,
@@ -1216,8 +1215,8 @@ const RAW: RawSeed[] = [
     slug: "doi",
     name: "দই",
     emoji: "🥛",
-    category: "dugdho",
-    categoryName: "দুগ্ধজাত",
+    category: "dim-dui",
+    categoryName: "ডিম-দুধ",
     unit: "কেজি",
     basePrice: 220,
     min: 210,
@@ -1253,8 +1252,8 @@ const RAW: RawSeed[] = [
     slug: "butter",
     name: "মাখন",
     emoji: "🥛",
-    category: "dugdho",
-    categoryName: "দুগ্ধজাত",
+    category: "dim-dui",
+    categoryName: "ডিম-দুধ",
     unit: "কেজি",
     basePrice: 850,
     min: 820,

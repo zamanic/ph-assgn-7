@@ -88,7 +88,7 @@ export function getBanglaDate(): string {
 
 export const API_BASE =
   process.env.NEXT_PUBLIC_API_BASE ||
-  "https://api.api-store.workers.dev/api/bazardor";
+  "https://openapi.programming-hero.com/api/bazardor";
 
 // ========================================================================
 // Data Normalizers — map raw API response fields to our Product/Category TS types
