@@ -22,6 +22,10 @@ export interface Product {
   todayPrice: number;
   changePercent: number;
   prices: MarketPrice[];
+  // Historical prices (from API: yesterday / lastWeek / lastMonth)
+  yesterdayPrice?: number;
+  lastWeekPrice?: number;
+  lastMonthPrice?: number;
   // Extra: raw markets array (optional, preserves API structure)
   _rawMarkets?: unknown[];
 }

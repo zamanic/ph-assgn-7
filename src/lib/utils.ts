@@ -223,6 +223,10 @@ export function normalizeProduct(raw: RawProduct): Product {
     todayPrice: todayPrice || avgPrice || 0,
     changePercent,
     prices,
+    // Historical prices (for detail page)
+    yesterdayPrice: raw.yesterday ? Number(raw.yesterday) : undefined,
+    lastWeekPrice: raw.lastWeek ? Number(raw.lastWeek) : undefined,
+    lastMonthPrice: raw.lastMonth ? Number(raw.lastMonth) : undefined,
     // Keep raw markets for easy use in per-market display
     // @ts-ignore: markets is extra (not strictly in interface but helpful)
     _rawMarkets: raw.markets,
@@ -313,9 +317,11 @@ export interface FetchMeta {
   fromFallback: boolean;
 }
 
-export async function fetchProductsWithMeta(category?: string): Promise<{
-  data: Product[];
-} & FetchMeta> {
+export async function fetchProductsWithMeta(category?: string): Promise<
+  {
+    data: Product[];
+  } & FetchMeta
+> {
   const url = category
     ? `${API_BASE}/products?category=${encodeURIComponent(category)}`
     : `${API_BASE}/products`;
@@ -360,9 +366,11 @@ export async function fetchProduct(
   return data;
 }
 
-export async function fetchCategoriesWithMeta(): Promise<{
-  data: Category[];
-} & FetchMeta> {
+export async function fetchCategoriesWithMeta(): Promise<
+  {
+    data: Category[];
+  } & FetchMeta
+> {
   const raw = await fetchWithFallback<any[]>(`${API_BASE}/categories`);
   if (Array.isArray(raw) && raw.length > 0) {
     const normalized = normalizeCategories(raw);
@@ -376,9 +384,11 @@ export async function fetchCategories(): Promise<Category[]> {
   return data;
 }
 
-export async function fetchCategoryWithMeta(slug: string): Promise<{
-  data: Category | null;
-} & FetchMeta> {
+export async function fetchCategoryWithMeta(slug: string): Promise<
+  {
+    data: Category | null;
+  } & FetchMeta
+> {
   const url = `${API_BASE}/categories/${encodeURIComponent(slug)}`;
   const raw = await fetchWithFallback<any>(url);
   if (raw) {

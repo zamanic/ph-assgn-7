@@ -171,8 +171,8 @@ export default function SignInPage() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="your@email.com"
-                  className={`input input-bordered w-full ${
+                  placeholder="you@example.com"
+                  className={`input input-bordered w-full bg-white text-[#1D271F] placeholder:text-[#1D271F]/40 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary ${
                     errors.email ? "input-error" : ""
                   }`}
                   disabled={loading}
@@ -197,7 +197,7 @@ export default function SignInPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className={`input input-bordered w-full ${
+                  className={`input input-bordered w-full bg-white text-[#1D271F] placeholder:text-[#1D271F]/40 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary ${
                     errors.password ? "input-error" : ""
                   }`}
                   disabled={loading}
@@ -231,6 +231,14 @@ export default function SignInPage() {
                   className="text-primary font-semibold hover:underline"
                 >
                   নিবন্ধন করুন
+                </Link>
+              </p>
+              <p className="text-sm mt-3">
+                <Link
+                  href="/"
+                  className="text-base-content/60 hover:text-primary hover:underline"
+                >
+                  ← হোম পেজে ফিরে যান
                 </Link>
               </p>
             </div>

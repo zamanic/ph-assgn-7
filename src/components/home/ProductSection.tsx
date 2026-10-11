@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo, useState } from "react";
 import type { Product } from "@/types";
 import ProductCard from "@/components/shared/ProductCard";
 
@@ -16,6 +17,11 @@ interface ProductSectionProps {
   subtitle?: string;
   products: Product[];
   id?: string;
+  /** Optional leading icon (e.g. ▲ / ▼) rendered before the title with a custom color. */
+  icon?: string;
+  iconColor?: string;
+  /** When true, shows a sort dropdown (ডিফল্ট / দাম কম→বেশি / দাম বেশি→কম). */
+  sortable?: boolean;
 }
 
 const ProductSection = ({
@@ -23,7 +29,21 @@ const ProductSection = ({
   subtitle,
   products,
   id,
+  icon,
+  iconColor,
+  sortable = false,
 }: ProductSectionProps) => {
+  const [sort, setSort] = useState<"default" | "price-asc" | "price-desc">(
+    "default",
+  );
+
+  const sorted = useMemo(() => {
+    const arr = [...products];
+    if (sort === "price-asc") arr.sort((a, b) => a.todayPrice - b.todayPrice);
+    if (sort === "price-desc") arr.sort((a, b) => b.todayPrice - a.todayPrice);
+    return arr;
+  }, [products, sort]);
+
   return (
     <section
       id={id}
@@ -31,15 +51,46 @@ const ProductSection = ({
     >
       {/* Section header — row of icon+title with 8px inner gap */}
       <div
-        className="w-full flex items-center"
+        className="w-full flex items-center justify-between flex-wrap gap-2"
         style={{ columnGap: 8, minHeight: 28 }}
       >
-        <h2
-          className="m-0 text-[#1D271F]"
-          style={{ fontSize: 20, fontWeight: 700, lineHeight: 1.4 }}
-        >
-          {title}
-        </h2>
+        <div className="flex items-center" style={{ columnGap: 8 }}>
+          {icon && (
+            <span
+              aria-hidden
+              style={{
+                fontSize: 20,
+                fontWeight: 700,
+                lineHeight: 1.4,
+                color: iconColor || "#1D271F",
+              }}
+            >
+              {icon}
+            </span>
+          )}
+          <h2
+            className="m-0 text-[#1D271F]"
+            style={{ fontSize: 20, fontWeight: 700, lineHeight: 1.4 }}
+          >
+            {title}
+          </h2>
+        </div>
+
+        {sortable && (
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-[#1D271F]/60">সাজান:</span>
+            <select
+              value={sort}
+              onChange={(e) => setSort(e.target.value as typeof sort)}
+              className="select select-bordered select-sm bg-white text-[#1D271F] focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary"
+              style={{ fontSize: 13 }}
+            >
+              <option value="default">ডিফল্ট</option>
+              <option value="price-asc">দাম: কম থেকে বেশি</option>
+              <option value="price-desc">দাম: বেশি থেকে কম</option>
+            </select>
+          </div>
+        )}
       </div>
 
       {subtitle && (
@@ -69,7 +120,7 @@ const ProductSection = ({
           rowGap: 16,
         }}
       >
-        {products.map((product) => (
+        {sorted.map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}
       </div>

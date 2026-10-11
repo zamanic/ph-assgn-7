@@ -57,7 +57,10 @@ const EmptySection = ({
   message: string;
 }) => (
   <section className="mx-auto w-full max-w-[1152px] px-4">
-    <h2 className="font-bold text-[#1D271F]" style={{ fontSize: 20, lineHeight: 1.4 }}>
+    <h2
+      className="font-bold text-[#1D271F]"
+      style={{ fontSize: 20, lineHeight: 1.4 }}
+    >
       {title}
     </h2>
     <div
@@ -101,19 +104,29 @@ const HomeContent = () => {
       style={{ rowGap: 40, padding: "24px 0" }}
     >
       {risers.length > 0 ? (
-        <ProductSection title="আজ দাম বেড়েছে ▲" products={risers} />
+        <ProductSection
+          title="আজ দাম বেড়েছে"
+          icon="▲"
+          iconColor="#D03739"
+          products={risers}
+        />
       ) : (
         <EmptySection
-          title="আজ দাম বেড়েছে ▲"
+          title="আজ দাম বেড়েছে"
           message="আজকের জন্য কোনো দাম বাড়ানোর তথ্য পাওয়া যায়নি"
         />
       )}
 
       {fallers.length > 0 ? (
-        <ProductSection title="আজ দাম কমেছে ▼" products={fallers} />
+        <ProductSection
+          title="আজ দাম কমেছে"
+          icon="▼"
+          iconColor="#1A9951"
+          products={fallers}
+        />
       ) : (
         <EmptySection
-          title="আজ দাম কমেছে ▼"
+          title="আজ দাম কমেছে"
           message="আজকের জন্য কোনো দাম কমানোর তথ্য পাওয়া যায়নি"
         />
       )}
@@ -121,8 +134,9 @@ const HomeContent = () => {
       <ProductSection
         id="সব-পণ্য"
         title="সব পণ্য"
-        subtitle="সকল পণ্যের আজকের বাজার দাম"
+        subtitle={`মোট ${products.length}টি পণ্য দেখানো হচ্ছে`}
         products={products}
+        sortable
       />
     </div>
   );
@@ -140,9 +154,9 @@ export default function Home() {
       <Suspense
         fallback={
           <div className="flex flex-col w-full" style={{ rowGap: 40 }}>
-          <SectionSkeleton title="আজ দাম বেড়েছে ▲" count={6} />
-          <SectionSkeleton title="আজ দাম কমেছে ▼" count={6} />
-          <SectionSkeleton title="সব পণ্য" count={9} />
+            <SectionSkeleton title="আজ দাম বেড়েছে ▲" count={6} />
+            <SectionSkeleton title="আজ দাম কমেছে ▼" count={6} />
+            <SectionSkeleton title="সব পণ্য" count={9} />
           </div>
         }
       >
