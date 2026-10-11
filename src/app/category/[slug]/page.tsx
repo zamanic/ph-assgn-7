@@ -129,9 +129,9 @@ export default function CategoryPage({
             <label
               htmlFor="cat-sort"
               className="text-[#1D271F]"
-              style={{ fontSize: 14, fontWeight: 500, opacity: 0.75 }}
+              style={{ fontSize: 14, fontWeight: 500, opacity: 0.75, lineHeight: 1 }}
             >
-              সাজান:
+              সাজান
             </label>
             <select
               id="cat-sort"

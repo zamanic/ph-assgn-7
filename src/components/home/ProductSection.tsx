@@ -78,12 +78,19 @@ const ProductSection = ({
 
         {sortable && (
           <div className="flex items-center gap-2">
-            <span className="text-sm text-[#1D271F]/60">সাজান:</span>
+            <label
+              htmlFor="home-sort"
+              className="text-[#1D271F]"
+              style={{ fontSize: 14, fontWeight: 500, opacity: 0.6, lineHeight: 1 }}
+            >
+              সাজান
+            </label>
             <select
+              id="home-sort"
               value={sort}
               onChange={(e) => setSort(e.target.value as typeof sort)}
               className="select select-bordered select-sm bg-white text-[#1D271F] focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary"
-              style={{ fontSize: 13 }}
+              style={{ fontSize: 13, minHeight: 36 }}
             >
               <option value="default">ডিফল্ট</option>
               <option value="price-asc">দাম: কম থেকে বেশি</option>

@@ -345,6 +345,15 @@
   animation-play-state: paused;
 }
 
+/* Global loading spinner + pulse */
+@keyframes spin-loader {
+  to { transform: rotate(360deg); }
+}
+@keyframes pulse-loader {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
 /* Ticker height exact — 37px, base-100 bg, top & bottom 1px base-300 stroke */
 .ticker-outer {
   height: 37px;

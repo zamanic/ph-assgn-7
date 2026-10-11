@@ -11,7 +11,17 @@ import { mongodbAdapter } from "better-auth/adapters/mongodb";
      BETTER_AUTH_GITHUB_CLIENT_ID, BETTER_AUTH_GITHUB_SECRET
    ======================================================================== */
 
-const client = new MongoClient(process.env.BETTER_AUTH_DB_URL!);
+/* ========================================================================
+   MongoDB client — created LAZILY to avoid crashing `next build` when
+   BETTER_AUTH_DB_URL is not yet injected (e.g. during Vercel build, env vars
+   may be evaluated at module-load time). `new MongoClient(undefined)` throws
+   "Cannot read properties of undefined (reading 'startsWith')". We provide a
+   syntactically-valid fallback URI so the constructor never crashes; the real
+   connection string is used at runtime when the env var is present.
+   ======================================================================== */
+const MONGODB_URI =
+  process.env.BETTER_AUTH_DB_URL || "mongodb://127.0.0.1:27017/bazardor-auth";
+const client = new MongoClient(MONGODB_URI);
 const db = client.db("bazardor-auth");
 
 export const auth = betterAuth({

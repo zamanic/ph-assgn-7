@@ -7,7 +7,7 @@ import { useSession, signOut } from "@/lib/auth-client";
 import { useApp } from "@/context/AppContext";
 import { getBanglaDate } from "@/lib/utils";
 import toast from "react-hot-toast";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 /**
  * Navbar — exact Penpot "Header" spec:
@@ -24,6 +24,7 @@ const Navbar = () => {
   const [banglaDate, setBanglaDate] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
+  const profileDropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setBanglaDate(getBanglaDate());
@@ -34,6 +35,21 @@ const Navbar = () => {
     setMobileMenuOpen(false);
     setProfileDropdownOpen(false);
   }, [pathname]);
+
+  // Close profile dropdown when clicking outside
+  useEffect(() => {
+    if (!profileDropdownOpen) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        profileDropdownRef.current &&
+        !profileDropdownRef.current.contains(e.target as Node)
+      ) {
+        setProfileDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [profileDropdownOpen]);
 
   const handleSignOut = async () => {
     try {
@@ -119,7 +135,7 @@ const Navbar = () => {
           {/* RIGHT: Auth buttons / Profile */}
           <div className="flex items-center gap-3">
             {session?.user ? (
-              <div className="relative">
+              <div className="relative" ref={profileDropdownRef}>
                 <button
                   type="button"
                   onClick={() => setProfileDropdownOpen((v) => !v)}
@@ -132,28 +148,58 @@ const Navbar = () => {
                     {session.user.name?.charAt(0) || "ই"}
                   </div>
                   <span className="hidden sm:inline">{session.user.name}</span>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="hidden sm:inline"
+                    style={{
+                      transform: profileDropdownOpen
+                        ? "rotate(180deg)"
+                        : "rotate(0deg)",
+                      transition: "transform 0.2s ease",
+                    }}
+                    aria-hidden
+                  >
+                    <polyline points="6 9 12 15 18 9" />
+                  </svg>
                 </button>
                 {profileDropdownOpen && (
                   <ul
-                    className="absolute right-0 mt-2 w-52 rounded-xl bg-[#FAFCFA] border border-[#E1E8E1] p-2 shadow-lg z-20"
+                    className="absolute right-0 mt-2 w-60 rounded-xl bg-[#FAFCFA] border border-[#E1E8E1] p-2 shadow-lg z-20"
                     role="menu"
                   >
+                    {/* User info header */}
+                    <li className="px-3 py-3 border-b border-[#E1E8E1] mb-1">
+                      <p
+                        className="m-0 text-[#1D271F] font-bold truncate"
+                        style={{ fontSize: 14 }}
+                      >
+                        {session.user.name}
+                      </p>
+                      <p
+                        className="m-0 mt-0.5 text-[#1D271F] truncate"
+                        style={{ fontSize: 12, opacity: 0.6 }}
+                      >
+                        {session.user.email}
+                      </p>
+                    </li>
                     <li>
                       <Link
                         href="/profile"
                         onClick={() => setProfileDropdownOpen(false)}
                         className="nav-chip w-full !justify-start"
                       >
-                        প্রোফাইল
-                      </Link>
-                    </li>
-                    <li>
-                      <Link
-                        href="/profile/update"
-                        onClick={() => setProfileDropdownOpen(false)}
-                        className="nav-chip w-full !justify-start"
-                      >
-                        আপডেট প্রোফাইল
+                        <span aria-hidden style={{ fontSize: 14 }}>
+                          👤
+                        </span>
+                        আমার প্রোফাইল
                       </Link>
                     </li>
                     <li>
@@ -162,7 +208,10 @@ const Navbar = () => {
                         onClick={handleSignOut}
                         className="nav-chip w-full !justify-start text-[#D03739] hover:!bg-[#FFF6F5]"
                       >
-                        সাইন আউট
+                        <span aria-hidden style={{ fontSize: 14 }}>
+                          🚪
+                        </span>
+                        Sign out
                       </button>
                     </li>
                   </ul>
@@ -268,23 +317,24 @@ const Navbar = () => {
                   <div className="w-8 h-8 rounded-full bg-[#05893E] text-[#F3FBF4] flex items-center justify-center text-sm font-bold">
                     {session.user.name?.charAt(0) || "ই"}
                   </div>
-                  <span className="text-sm font-medium">
-                    {session.user.name}
-                  </span>
+                  <div className="min-w-0">
+                    <p className="m-0 text-sm font-medium truncate">
+                      {session.user.name}
+                    </p>
+                    <p className="m-0 text-xs text-[#1D271F]/60 truncate">
+                      {session.user.email}
+                    </p>
+                  </div>
                 </div>
                 <Link
                   href="/profile"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="nav-chip"
+                  className="nav-chip !justify-start"
                 >
-                  প্রোফাইল
-                </Link>
-                <Link
-                  href="/profile/update"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="nav-chip"
-                >
-                  আপডেট প্রোফাইল
+                  <span aria-hidden style={{ fontSize: 14 }}>
+                    👤
+                  </span>
+                  আমার প্রোফাইল
                 </Link>
                 <button
                   type="button"
@@ -292,9 +342,12 @@ const Navbar = () => {
                     handleSignOut();
                     setMobileMenuOpen(false);
                   }}
-                  className="nav-chip !text-[#D03739] hover:!bg-[#FFF6F5]"
+                  className="nav-chip !justify-start !text-[#D03739] hover:!bg-[#FFF6F5]"
                 >
-                  সাইন আউট
+                  <span aria-hidden style={{ fontSize: 14 }}>
+                    🚪
+                  </span>
+                  Sign out
                 </button>
               </div>
             )}
