@@ -28,7 +28,7 @@ export default function NotFound() {
               e.preventDefault();
               window.history.back();
             }}
-            className="btn btn-outline btn-lg gap-2"
+            className="btn btn-outline btn-lg gap-2 !text-[#1D271F] !border-[#1D271F]/30 hover:!bg-[#1D271F]/5"
           >
             <span>←</span>
             পূর্ববর্তী পেজে যান

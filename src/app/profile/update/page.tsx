@@ -121,7 +121,9 @@ export default function ProfileUpdatePage() {
           <form onSubmit={handleUpdate} className="space-y-5">
             <div className="form-control">
               <label className="label">
-                <span className="label-text font-medium">নাম</span>
+                <span className="label-text font-medium text-[#1D271F]">
+                  নাম
+                </span>
               </label>
               <input
                 type="text"
@@ -145,7 +147,9 @@ export default function ProfileUpdatePage() {
 
             <div className="form-control">
               <label className="label">
-                <span className="label-text font-medium">ইমেইল</span>
+                <span className="label-text font-medium text-[#1D271F]">
+                  ইমেইল
+                </span>
               </label>
               <input
                 type="email"
@@ -163,7 +167,7 @@ export default function ProfileUpdatePage() {
             <div className="flex flex-col-reverse sm:flex-row gap-3 mt-6 pt-4">
               <Link
                 href="/profile"
-                className={`btn btn-outline flex-1 ${
+                className={`btn btn-outline flex-1 !text-[#1D271F] !border-[#1D271F]/30 hover:!bg-[#1D271F]/5 ${
                   loading ? "pointer-events-none opacity-50" : ""
                 }`}
               >

@@ -19,16 +19,18 @@ export const auth = betterAuth({
   baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
   emailAndPassword: {
     enabled: true,
-    requireEmailVerification: false, /* per instructions — examiner convenience */
+    requireEmailVerification: false /* per instructions — examiner convenience */,
   },
   socialProviders: {
     google: {
       clientId: process.env.BETTER_AUTH_GOOGLE_CLIENT_ID as string,
       clientSecret: process.env.BETTER_AUTH_GOOGLE_SECRET as string,
+      autoSignUp: true /* auto-create account on first social sign-in (fixes account_not_linked) */,
     },
     github: {
       clientId: process.env.BETTER_AUTH_GITHUB_CLIENT_ID as string,
       clientSecret: process.env.BETTER_AUTH_GITHUB_SECRET as string,
+      autoSignUp: true /* auto-create account on first social sign-in (fixes account_not_linked) */,
     },
   },
   database: mongodbAdapter(db, { client }),
@@ -36,9 +38,10 @@ export const auth = betterAuth({
     ? process.env.BETTER_AUTH_TRUSTED_ORIGINS.split(",")
         .map((s) => s.trim())
         .filter(Boolean)
-    : ["http://localhost:3000", process.env.NEXT_PUBLIC_APP_URL || ""]
-        .filter(Boolean),
+    : ["http://localhost:3000", process.env.NEXT_PUBLIC_APP_URL || ""].filter(
+        Boolean,
+      ),
   session: {
-    expiresIn: 60 * 60 * 24 * 7, /* 7 days */
+    expiresIn: 60 * 60 * 24 * 7 /* 7 days */,
   },
 });

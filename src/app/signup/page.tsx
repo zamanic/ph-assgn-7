@@ -150,7 +150,7 @@ export default function SignUpPage() {
                     <button
                       type="button"
                       onClick={() => handleSocialSignIn("google")}
-                      className="btn btn-outline gap-2 w-full"
+                      className="btn btn-outline gap-2 w-full !text-[#1D271F] !border-[#1D271F]/30 hover:!bg-[#1D271F]/5"
                       disabled={loading}
                     >
                       <GoogleSvg />
@@ -161,7 +161,7 @@ export default function SignUpPage() {
                     <button
                       type="button"
                       onClick={() => handleSocialSignIn("github")}
-                      className="btn btn-outline gap-2 w-full"
+                      className="btn btn-outline gap-2 w-full !text-[#1D271F] !border-[#1D271F]/30 hover:!bg-[#1D271F]/5"
                       disabled={loading}
                     >
                       <GithubSvg />
@@ -179,7 +179,9 @@ export default function SignUpPage() {
             <form onSubmit={handleSignUp} className="space-y-4">
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text font-medium">নাম</span>
+                  <span className="label-text font-medium text-[#1D271F]">
+                    নাম
+                  </span>
                 </label>
                 <input
                   type="text"
@@ -202,7 +204,9 @@ export default function SignUpPage() {
 
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text font-medium">ইমেইল</span>
+                  <span className="label-text font-medium text-[#1D271F]">
+                    ইমেইল
+                  </span>
                 </label>
                 <input
                   type="email"
@@ -225,7 +229,9 @@ export default function SignUpPage() {
 
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text font-medium">পাসওয়ার্ড</span>
+                  <span className="label-text font-medium text-[#1D271F]">
+                    পাসওয়ার্ড
+                  </span>
                 </label>
                 <input
                   type="password"
