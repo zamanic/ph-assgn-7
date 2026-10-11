@@ -21,6 +21,19 @@ export const auth = betterAuth({
     enabled: true,
     requireEmailVerification: false /* per instructions — examiner convenience */,
   },
+  /* ======================================================================
+     Account linking — auto-links a Google/GitHub sign-in to an existing
+     email/password user when the provider email matches. This fixes the
+     'account_not_linked' error for users who signed up with email first
+     and later try Google/GitHub (or vice-versa).
+     trustedProviders = providers whose emails we trust enough to auto-link.
+     ====================================================================== */
+  account: {
+    accountLinking: {
+      enabled: true,
+      trustedProviders: ["google", "github"],
+    },
+  },
   socialProviders: {
     google: {
       clientId: process.env.BETTER_AUTH_GOOGLE_CLIENT_ID as string,
